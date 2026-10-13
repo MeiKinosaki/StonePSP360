@@ -1,4 +1,4 @@
-# StonePSP360 v8.4b — libXenon build
+# StonePSP360 v8.6b — libXenon build
 .SUFFIXES:
 
 ifeq ($(strip $(DEVKITXENON)),)
@@ -9,9 +9,9 @@ include $(DEVKITXENON)/rules
 
 TARGET := StonePSP360
 BUILD := build
-SOURCES := source
+SOURCES := source core/psp
 DATA :=
-INCLUDES :=
+INCLUDES := core/psp
 
 CFLAGS := -g -O2 -Wall $(MACHDEP) $(INCLUDE)
 CXXFLAGS := $(CFLAGS)
@@ -53,6 +53,5 @@ clean:
 else
 DEPENDS := $(OFILES:.o=.d)
 $(OUTPUT).elf32: $(OUTPUT).elf
-$(OUTPUT).elf: $(OFILES)
 -include $(DEPENDS)
 endif
