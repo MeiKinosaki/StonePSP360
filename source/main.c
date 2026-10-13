@@ -8,9 +8,12 @@
 #include <xenon_soc/xenon_power.h>
 #include <xenos/xenos.h>
 
+#include "psp_core.h"
+
 int main(void)
 {
     struct controller_data_s pad;
+    PspCoreStatus core_status;
 
     xenos_init(VIDEO_MODE_AUTO);
     console_init();
@@ -19,13 +22,15 @@ int main(void)
     usb_do_poll();
     console_clrscr();
 
-    puts("StonePSP360 v8.5b");
+    core_status = psp_core_init();
+
+    puts("StonePSP360 v8.6b");
     puts("Xbox 360 / libXenon platform test");
     puts("");
-    puts("Build target: ELF32 PowerPC");
-    puts("PSP core: not integrated");
-    puts("This program does not run PSP games.");
+    puts("PSP core scaffold:");
+    puts(psp_core_status_string(core_status));
     puts("");
+    puts("No PSP instructions or games are emulated yet.");
     puts("Press Guide or Y to exit.");
 
     while (true) {
