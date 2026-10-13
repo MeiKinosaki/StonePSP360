@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'source/**'
+      - 'core/**'
       - 'Makefile'
       - '.github/workflows/build-xenon.yml'
 
@@ -46,7 +47,7 @@ jobs:
       - name: Upload ELF32 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: StonePSP360-v8.5b-elf32
+          name: StonePSP360-v8.6b-elf32
           path: StonePSP360.elf32
           if-no-files-found: error
           retention-days: 14
