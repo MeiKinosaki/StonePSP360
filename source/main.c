@@ -19,11 +19,13 @@ int main(void)
     usb_do_poll();
     console_clrscr();
 
-    puts("StonePSP360 v8.4b");
-    puts("Xbox 360 / libXenon boot test");
+    puts("StonePSP360 v8.5b");
+    puts("Xbox 360 / libXenon platform test");
     puts("");
-    puts("This is a platform smoke test only.");
-    puts("The PSP emulation core is not integrated yet.");
+    puts("Build target: ELF32 PowerPC");
+    puts("PSP core: not integrated");
+    puts("This program does not run PSP games.");
+    puts("");
     puts("Press Guide or Y to exit.");
 
     while (true) {
