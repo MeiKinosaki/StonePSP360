@@ -1,9 +1,8 @@
-# Build audit — StonePSP360 v8.10b
+# Build audit — StonePSP360 v8.11b
 
-- Target: Xbox 360 RGH/JTAG using Free60/libXenon.
-- CI: host tests for Allegrex reset, PSP RAM aliases, and core/memory integration; then ELF32 PowerPC big-endian build.
-- PSP RAM: 32 MiB allocation, 8/16/32-bit little-endian access, range checks, mirrors at 0x08000000, 0x48000000, 0x88000000, 0xA8000000, and 0xC8000000.
-- Core owns RAM after successful initialization and exposes checked read/write accessors.
-- CPU fetch/decode/execute remains unimplemented; psp_core_run_frame() returns PSP_CORE_NOT_IMPLEMENTED.
-- Artifact contains StonePSP360.elf32 and xenon.elf; xenon.elf is a copy, not default.xex.
-- No physical-console or game-compatibility test is claimed.
+- Host tests: Allegrex reset, PSP RAM/aliases, core-memory lifecycle, instruction subset.
+- CPU subset: ADDU, SUBU, AND/OR/XOR/NOR, SLT/SLTU, shifts, ADDIU, SLTI/SLTIU, ANDI/ORI/XORI/LUI, BEQ/BNE/BLEZ/BGTZ, J/JAL/JR/JALR, LB/LBU/LH/LHU/LW/SB/SH/SW.
+- Delay-slot PC model is included for the implemented branches/jumps.
+- Unsupported instruction, invalid fetch and data-memory faults return explicit statuses.
+- CPU interpreter is not yet connected to a game loader or full frame run loop.
+- ELF32 PowerPC big-endian cloud build is required CI check; no hardware/game compatibility is claimed.

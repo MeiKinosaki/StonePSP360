@@ -1,27 +1,26 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.10b  
+**Versão de desenvolvimento:** v8.11b  
 **Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
 
-## Mudanças v8.10b
+## Mudanças v8.11b
 
-- Integrado o módulo de RAM PSP ao ciclo de vida do núcleo.
-- Adicionados acessores de leitura/escrita de 8, 16 e 32 bits no núcleo.
-- Acrescentado encerramento explícito da memória com `psp_core_shutdown()`.
-- Ampliados os aliases testados para incluir 0xA8000000.
-- Adicionado teste host para provar que o núcleo inicializa a RAM, acessa-a por aliases e continua reportando a execução de instruções como não implementada.
-- CI compila e executa três testes host antes do build ELF32 PowerPC big-endian.
-
-## Build na nuvem
-
-Abra [GitHub Actions](https://github.com/MeiKinosaki/StonePSP360/actions) e baixe o artefato da execução verde mais recente. O workflow publica `StonePSP360.elf32` e `xenon.elf`; o segundo é uma cópia do ELF, **não** um `default.xex`.
+- Primeiro passo do interpretador Allegrex/MIPS: subset aritmético, shifts, lógica, branches/jumps com modelo de delay slot e load/store.
+- Instruções não suportadas retornam `ALLEGREX_STEP_ILLEGAL_INSTRUCTION`; falhas de memória retornam status separado.
+- Teste host executa uma sequência pequena de instruções, verifica registradores, load/store e o registrador zero.
+- CI executa quatro testes host antes da compilação ELF32 PowerPC big-endian.
 
 ## Limitações
 
-A RAM está integrada ao núcleo, mas o núcleo ainda não faz fetch/decode/execute de instruções Allegrex. Não há ainda carregador ISO/CSO, GPU/GE, áudio, VFPU, sistema operacional PSP ou compatibilidade de jogos comprovada. O sucesso dos testes host/build não equivale a teste em hardware Xbox 360.
+O interpretador ainda é parcial. Overflow/exceções, interrupções, COP0 completo, VFPU, multiplicação/divisão, caches, temporização, BIOS/firmware, carregador ISO/CSO, gráficos e áudio não estão implementados. O interpretador ainda não está ligado a um carregador de jogos nem ao loop principal de execução. Nenhum jogo é declarado compatível.
+
+## Build na nuvem
+
+Veja [GitHub Actions](https://github.com/MeiKinosaki/StonePSP360/actions). O artefato `xenon.elf` é uma cópia do ELF32, não um `default.xex`. É necessário testar em hardware/XeLL para confirmar o carregamento real.
 
 ## Histórico
 
-- v8.8b: regra de link corrigida; teste de reset Allegrex.
-- v8.9b: módulo isolado de RAM PSP e testes.
-- v8.10b: RAM integrada ao ciclo de vida do núcleo e acessores públicos de memória.
+- v8.8b: regra de link e teste de reset Allegrex.
+- v8.9b: RAM PSP isolada com testes.
+- v8.10b: RAM integrada ao ciclo de vida do núcleo.
+- v8.11b: primeiro subset de execução de instruções Allegrex com teste automatizado.
