@@ -1,38 +1,27 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.4b  
-**Alvo:** Xbox 360 com RGH/JTAG, usando a toolchain Free60/libXenon.
+**Versão de desenvolvimento:** v8.5b  
+**Alvo:** Xbox 360 RGH/JTAG, com Free60/libXenon.
 
-## Estado desta versão
+## O que mudou na v8.5b
 
-Esta versão acrescenta um teste de inicialização da plataforma e uma workflow de build em nuvem. **Não é ainda um emulador PSP funcional.** O núcleo PSP/PPSSPP, CPU Allegrex, GPU, áudio, sistema de arquivos, entrada PSP e compatibilidade de jogos ainda não foram integrados.
+- Mantido o teste de inicialização de vídeo, consola e USB.
+- Mensagens no ecrã identificam o alvo ELF32 PowerPC e deixam claro que o núcleo PSP ainda não foi integrado.
+- Workflow de CI reforçada com verificações do cabeçalho ELF: classe 32-bit, big-endian e arquitetura PowerPC, além do SHA-256.
+- O artefato de build recebe o nome `StonePSP360-v8.5b-elf32`.
 
 ## Compilação em nuvem
 
-1. Abra a aba **Actions** deste repositório.
-2. Selecione **StonePSP360 libXenon build**.
-3. Clique em **Run workflow** e escolha a branch `main`.
-4. Quando terminar, abra a execução e baixe o artefato `StonePSP360-v8.4b-elf32`.
+A workflow **StonePSP360 libXenon build** é acionada por alterações em `source/**`, `Makefile` ou no próprio workflow, e também pode ser executada manualmente pela aba **Actions**. O job precisa terminar com sucesso e produzir o artefato `StonePSP360-v8.5b-elf32`.
 
-A workflow depende da disponibilidade e configuração da imagem `free60/libxenon:latest`. O build só deve ser considerado aprovado se a execução terminar verde e o artefato ELF32 for gerado. A workflow ainda não foi validada por uma execução bem-sucedida neste commit.
+## Estado real do projeto
 
-## Compilação local
+O ELF32 de v8.4b foi compilado com sucesso no GitHub Actions e identificado como ELF 32-bit, big-endian, PowerPC. Isso valida a cadeia de compilação do teste de plataforma, não o funcionamento em hardware.
 
-Com a toolchain Free60/libXenon instalada e `DEVKITXENON` configurada:
-
-```sh
-make clean
-make
-```
-
-Saída esperada do template: `StonePSP360.elf32`.
-
-## Teste de plataforma
-
-O programa inicializa vídeo, consola e USB e mostra um aviso de que o núcleo PSP ainda não está integrado. Pressionar **Guide** ou **Y** encerra o teste. O comportamento real ainda precisa ser compilado e testado em hardware.
+**Ainda não é um emulador PSP funcional.** A CPU Allegrex, o núcleo PPSSPP, GPU PSP, áudio, sistema de arquivos e compatibilidade de jogos não foram integrados. O novo build v8.5b precisa passar pelas verificações adicionais antes de ser marcado como validado.
 
 ## Próximos passos
 
-- Confirmar a execução da workflow e corrigir erros reais do compilador.
-- Validar o formato de carregamento no XeLL e a cadeia de inicialização no Xbox 360.
-- Só depois começar a integração incremental do núcleo PSP, sem afirmar compatibilidade de jogos antes dos testes.
+1. Confirmar a validação ELF32 da v8.5b.
+2. Planejar e testar o carregamento no ambiente Xbox 360/XeLL, sem assumir compatibilidade só porque o ELF compilou.
+3. Investigar a integração do núcleo PSP de forma incremental e compatível com as licenças do código-base.
