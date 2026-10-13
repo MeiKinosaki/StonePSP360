@@ -17,10 +17,12 @@ int main(void)
     assert(psp_memory_read32(&memory, UINT32_C(0x08000100), &value32));
     assert(value32 == UINT32_C(0x12345678));
 
-    /* Cached, uncached, kernel, and uncached-kernel aliases share storage. */
+    /* Mirrors supported by the PSP memory map. */
     assert(psp_memory_read32(&memory, UINT32_C(0x48000100), &value32));
     assert(value32 == UINT32_C(0x12345678));
     assert(psp_memory_read32(&memory, UINT32_C(0x88000100), &value32));
+    assert(value32 == UINT32_C(0x12345678));
+    assert(psp_memory_read32(&memory, UINT32_C(0xA8000100), &value32));
     assert(value32 == UINT32_C(0x12345678));
     assert(psp_memory_read32(&memory, UINT32_C(0xC8000100), &value32));
     assert(value32 == UINT32_C(0x12345678));
@@ -39,6 +41,6 @@ int main(void)
     psp_memory_destroy(&memory);
     assert(memory.ram == NULL);
     assert(memory.ram_size == 0u);
-    puts("PASS: PSP RAM reads/writes, little-endian values, aliases, and bounds.");
+    puts("PASS: PSP RAM reads/writes, aliases, little-endian values, and bounds.");
     return 0;
 }

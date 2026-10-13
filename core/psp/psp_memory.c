@@ -17,6 +17,7 @@ static bool psp_memory_offset(const PspMemory *memory, uint32_t address,
     segment = address & UINT32_C(0xE0000000);
     if (segment != 0u && segment != UINT32_C(0x40000000) &&
         segment != UINT32_C(0x80000000) &&
+        segment != UINT32_C(0xA0000000) &&
         segment != UINT32_C(0xC0000000)) {
         return false;
     }
