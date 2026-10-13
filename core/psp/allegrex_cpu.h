@@ -15,4 +15,12 @@ typedef enum AllegrexStepResult {
 /* Execute one Allegrex/MIPS instruction, including its delay-slot PC model. */
 AllegrexStepResult allegrex_step(AllegrexState *state, PspMemory *memory);
 
+/*
+ * Execute at most max_steps instructions. executed_steps may be NULL.
+ * Returns the first instruction error, or ALLEGREX_STEP_OK when the budget
+ * is exhausted. A zero budget executes nothing.
+ */
+AllegrexStepResult allegrex_run(AllegrexState *state, PspMemory *memory,
+                                uint32_t max_steps, uint32_t *executed_steps);
+
 #endif

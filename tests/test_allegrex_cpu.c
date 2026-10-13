@@ -23,6 +23,8 @@ int main(void)
     PspMemory mem;
     AllegrexState cpu;
     const uint32_t base = UINT32_C(0x08000000);
+    uint32_t executed = 0u;
+
     assert(psp_memory_init(&mem));
     reset_at(&cpu, base);
     cpu.gpr[5] = base;
@@ -50,7 +52,6 @@ int main(void)
     assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_ILLEGAL_INSTRUCTION);
     assert(cpu.pc == base + 0x18u);
 
-    /* Signed multiply: -7 * 9 = -63; MFLO/MFHI expose the 64-bit result. */
     reset_at(&cpu, base + 0x40u);
     cpu.gpr[1] = UINT32_C(0xFFFFFFF9);
     cpu.gpr[2] = 9u;
@@ -62,7 +63,6 @@ int main(void)
     assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[3] == UINT32_C(0xFFFFFFC1));
     assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[4] == UINT32_MAX);
 
-    /* Signed divide: -63 / 9 = -7 remainder 0. */
     reset_at(&cpu, base + 0x60u);
     cpu.gpr[1] = UINT32_C(0xFFFFFFC1);
     cpu.gpr[2] = 9u;
@@ -70,7 +70,6 @@ int main(void)
     assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK);
     assert(cpu.lo == UINT32_C(0xFFFFFFF9) && cpu.hi == 0u);
 
-    /* BEQ is taken, its delay-slot instruction runs, then execution reaches target. */
     reset_at(&cpu, base + 0x100u);
     cpu.gpr[1] = 5u;
     put_instruction(&mem, base + 0x100u, I(0x04, 1, 1, 2));
@@ -84,7 +83,21 @@ int main(void)
     assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK);
     assert(cpu.gpr[8] == 88u && cpu.gpr[7] == 0u);
 
+    /* Bounded run loop executes exactly its budget and reports count. */
+    reset_at(&cpu, base + 0x200u);
+    put_instruction(&mem, base + 0x200u, I(0x09, 0, 9, 11));
+    put_instruction(&mem, base + 0x204u, I(0x09, 0, 10, 12));
+    put_instruction(&mem, base + 0x208u, I(0x09, 9, 11, 13));
+    assert(allegrex_run(&cpu, &mem, 3u, &executed) == ALLEGREX_STEP_OK);
+    assert(executed == 3u && cpu.gpr[9] == 11u && cpu.gpr[10] == 12u);
+    assert(cpu.gpr[11] == 24u);
+
+    /* Zero budget is a no-op. */
+    reset_at(&cpu, base + 0x200u);
+    assert(allegrex_run(&cpu, &mem, 0u, &executed) == ALLEGREX_STEP_OK);
+    assert(executed == 0u && cpu.pc == base + 0x200u);
+
     psp_memory_destroy(&mem);
-    puts("PASS: Allegrex arithmetic, memory, HI/LO multiply/divide, and branch delay slot.");
+    puts("PASS: Allegrex subset and bounded CPU run loop.");
     return 0;
 }

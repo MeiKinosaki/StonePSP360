@@ -85,35 +85,35 @@ AllegrexStepResult allegrex_step(AllegrexState *state, PspMemory *memory)
     switch (opcode) {
     case 0u: /* SPECIAL */
         switch (funct) {
-        case 0x00u: result = b << shamt; write_gpr = true; break; /* SLL/NOP */
-        case 0x02u: result = b >> shamt; write_gpr = true; break; /* SRL */
-        case 0x03u: result = (uint32_t)((int32_t)b >> shamt); write_gpr = true; break; /* SRA */
-        case 0x04u: result = b << (a & 31u); write_gpr = true; break; /* SLLV */
-        case 0x06u: result = b >> (a & 31u); write_gpr = true; break; /* SRLV */
-        case 0x07u: result = (uint32_t)((int32_t)b >> (a & 31u)); write_gpr = true; break; /* SRAV */
+        case 0x00u: result = b << shamt; write_gpr = true; break;
+        case 0x02u: result = b >> shamt; write_gpr = true; break;
+        case 0x03u: result = (uint32_t)((int32_t)b >> shamt); write_gpr = true; break;
+        case 0x04u: result = b << (a & 31u); write_gpr = true; break;
+        case 0x06u: result = b >> (a & 31u); write_gpr = true; break;
+        case 0x07u: result = (uint32_t)((int32_t)b >> (a & 31u)); write_gpr = true; break;
         case 0x08u: state->next_pc = a; break; /* JR */
-        case 0x09u: /* JALR */
+        case 0x09u:
             if (rd != 0u) state->gpr[rd] = old_next_pc + 4u;
             state->next_pc = a;
             break;
-        case 0x10u: result = state->hi; write_gpr = true; break; /* MFHI */
-        case 0x11u: state->hi = a; break; /* MTHI */
-        case 0x12u: result = state->lo; write_gpr = true; break; /* MFLO */
-        case 0x13u: state->lo = a; break; /* MTLO */
-        case 0x18u: { /* MULT signed */
+        case 0x10u: result = state->hi; write_gpr = true; break;
+        case 0x11u: state->hi = a; break;
+        case 0x12u: result = state->lo; write_gpr = true; break;
+        case 0x13u: state->lo = a; break;
+        case 0x18u: {
             int64_t product = (int64_t)(int32_t)a * (int64_t)(int32_t)b;
             uint64_t bits = (uint64_t)product;
             state->lo = (uint32_t)bits;
             state->hi = (uint32_t)(bits >> 32);
             break;
         }
-        case 0x19u: { /* MULTU */
+        case 0x19u: {
             uint64_t product = (uint64_t)a * (uint64_t)b;
             state->lo = (uint32_t)product;
             state->hi = (uint32_t)(product >> 32);
             break;
         }
-        case 0x1Au: /* DIV signed; divide-by-zero leaves HI/LO unchanged in this model */
+        case 0x1Au:
             if (b != 0u) {
                 int32_t dividend = (int32_t)a;
                 int32_t divisor = (int32_t)b;
@@ -126,14 +126,14 @@ AllegrexStepResult allegrex_step(AllegrexState *state, PspMemory *memory)
                 }
             }
             break;
-        case 0x1Bu: /* DIVU; divide-by-zero leaves HI/LO unchanged in this model */
+        case 0x1Bu:
             if (b != 0u) {
                 state->lo = a / b;
                 state->hi = a % b;
             }
             break;
-        case 0x21u: result = a + b; write_gpr = true; break; /* ADDU */
-        case 0x23u: result = a - b; write_gpr = true; break; /* SUBU */
+        case 0x21u: result = a + b; write_gpr = true; break;
+        case 0x23u: result = a - b; write_gpr = true; break;
         case 0x24u: result = a & b; write_gpr = true; break;
         case 0x25u: result = a | b; write_gpr = true; break;
         case 0x26u: result = a ^ b; write_gpr = true; break;
@@ -147,18 +147,18 @@ AllegrexStepResult allegrex_step(AllegrexState *state, PspMemory *memory)
         if (write_gpr && rd != 0u) state->gpr[rd] = result;
         break;
 
-    case 0x01u: /* REGIMM branches */
+    case 0x01u:
         target = old_next_pc + (sign_extend16(imm) << 2);
         switch (rt) {
-        case 0x00u: if ((int32_t)a < 0) state->next_pc = target; break; /* BLTZ */
-        case 0x01u: if ((int32_t)a >= 0) state->next_pc = target; break; /* BGEZ */
-        case 0x10u: /* BLTZAL */
+        case 0x00u: if ((int32_t)a < 0) state->next_pc = target; break;
+        case 0x01u: if ((int32_t)a >= 0) state->next_pc = target; break;
+        case 0x10u:
             if ((int32_t)a < 0) {
                 state->gpr[31] = old_next_pc + 4u;
                 state->next_pc = target;
             }
             break;
-        case 0x11u: /* BGEZAL */
+        case 0x11u:
             if ((int32_t)a >= 0) {
                 state->gpr[31] = old_next_pc + 4u;
                 state->next_pc = target;
@@ -170,8 +170,8 @@ AllegrexStepResult allegrex_step(AllegrexState *state, PspMemory *memory)
         }
         break;
 
-    case 0x02u: /* J */
-    case 0x03u: /* JAL */
+    case 0x02u:
+    case 0x03u:
         if (opcode == 0x03u) state->gpr[31] = old_next_pc + 4u;
         state->next_pc = (old_next_pc & UINT32_C(0xF0000000)) |
                          ((op & UINT32_C(0x03FFFFFF)) << 2);
@@ -181,18 +181,18 @@ AllegrexStepResult allegrex_step(AllegrexState *state, PspMemory *memory)
     case 0x06u: if ((int32_t)a <= 0) state->next_pc = old_next_pc + (sign_extend16(imm) << 2); break;
     case 0x07u: if ((int32_t)a > 0) state->next_pc = old_next_pc + (sign_extend16(imm) << 2); break;
     case 0x08u: /* ADDI overflow exceptions are not modeled yet */
-    case 0x09u: result = a + sign_extend16(imm); write_gpr = true; break; /* ADDI(U) */
+    case 0x09u: result = a + sign_extend16(imm); write_gpr = true; break;
     case 0x0Au: result = (int32_t)a < (int32_t)sign_extend16(imm) ? 1u : 0u; write_gpr = true; break;
     case 0x0Bu: result = a < sign_extend16(imm) ? 1u : 0u; write_gpr = true; break;
     case 0x0Cu: result = a & imm; write_gpr = true; break;
     case 0x0Du: result = a | imm; write_gpr = true; break;
     case 0x0Eu: result = a ^ imm; write_gpr = true; break;
     case 0x0Fu: result = imm << 16; write_gpr = true; break;
-    case 0x20u: /* LB */
-    case 0x24u: /* LBU */
-    case 0x21u: /* LH */
-    case 0x25u: /* LHU */
-    case 0x23u: /* LW */
+    case 0x20u:
+    case 0x24u:
+    case 0x21u:
+    case 0x25u:
+    case 0x23u:
         target = a + sign_extend16(imm);
         if (!load_data(memory, target,
                        (opcode == 0x20u || opcode == 0x24u) ? 1u :
@@ -204,9 +204,9 @@ AllegrexStepResult allegrex_step(AllegrexState *state, PspMemory *memory)
         if (opcode == 0x21u) result = (uint32_t)(int32_t)(int16_t)result;
         write_gpr = true;
         break;
-    case 0x28u: /* SB */
-    case 0x29u: /* SH */
-    case 0x2Bu: /* SW */
+    case 0x28u:
+    case 0x29u:
+    case 0x2Bu:
         target = a + sign_extend16(imm);
         if (!store_data(memory, target,
                         opcode == 0x28u ? 1u : opcode == 0x29u ? 2u : 4u, b)) {
@@ -221,5 +221,27 @@ AllegrexStepResult allegrex_step(AllegrexState *state, PspMemory *memory)
 
     if (write_gpr && rt != 0u && opcode != 0u) state->gpr[rt] = result;
     state->gpr[0] = 0u;
+    return ALLEGREX_STEP_OK;
+}
+
+AllegrexStepResult allegrex_run(AllegrexState *state, PspMemory *memory,
+                                uint32_t max_steps, uint32_t *executed_steps)
+{
+    uint32_t count = 0u;
+    AllegrexStepResult result = ALLEGREX_STEP_OK;
+
+    if (executed_steps != NULL) *executed_steps = 0u;
+    if (state == NULL || memory == NULL) return ALLEGREX_STEP_INVALID_ARGUMENT;
+
+    while (count < max_steps) {
+        result = allegrex_step(state, memory);
+        if (result != ALLEGREX_STEP_OK) {
+            if (executed_steps != NULL) *executed_steps = count;
+            return result;
+        }
+        ++count;
+    }
+
+    if (executed_steps != NULL) *executed_steps = count;
     return ALLEGREX_STEP_OK;
 }
