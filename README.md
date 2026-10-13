@@ -1,27 +1,25 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.5b  
-**Alvo:** Xbox 360 RGH/JTAG, com Free60/libXenon.
+**Versão de desenvolvimento:** v8.6b  
+**Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
 
-## O que mudou na v8.5b
+## Mudanças na v8.6b
 
-- Mantido o teste de inicialização de vídeo, consola e USB.
-- Mensagens no ecrã identificam o alvo ELF32 PowerPC e deixam claro que o núcleo PSP ainda não foi integrado.
-- Workflow de CI reforçada com verificações do cabeçalho ELF: classe 32-bit, big-endian e arquitetura PowerPC, além do SHA-256.
-- O artefato de build recebe o nome `StonePSP360-v8.5b-elf32`.
+- Criado um esqueleto inicial de estado arquitetural do Allegrex: GPRs, HI/LO, PC, registradores de ponto flutuante em representação de bits e alguns registradores COP0.
+- Criada uma API explícita para estado do núcleo PSP e execução de frame, que retorna `NOT_IMPLEMENTED` até existir um interpretador real.
+- O teste de plataforma agora mostra o estado do esqueleto PSP no ecrã.
+- Makefile inclui `core/psp`; CI verifica ELF32, big-endian, PowerPC e SHA-256.
 
-## Compilação em nuvem
+## Build na nuvem
 
-A workflow **StonePSP360 libXenon build** é acionada por alterações em `source/**`, `Makefile` ou no próprio workflow, e também pode ser executada manualmente pela aba **Actions**. O job precisa terminar com sucesso e produzir o artefato `StonePSP360-v8.5b-elf32`.
+Abra **Actions → StonePSP360 libXenon build** e execute a workflow. O artefato será `StonePSP360-v8.6b-elf32` se todas as verificações passarem.
 
-## Estado real do projeto
+## Limitações explícitas
 
-O ELF32 de v8.4b foi compilado com sucesso no GitHub Actions e identificado como ELF 32-bit, big-endian, PowerPC. Isso valida a cadeia de compilação do teste de plataforma, não o funcionamento em hardware.
+Esta versão **não emula jogos PSP**. O estado Allegrex é apenas armazenamento de registradores; não há fetch/decode/execute, memória PSP, exceções completas, VFPU, temporização, GPU, áudio, carregamento de ISO/CSO ou integração do PPSSPP. A compilação v8.5b passou no GitHub Actions, mas v8.6b precisa de seu próprio resultado de CI e não foi testada em hardware.
 
-**Ainda não é um emulador PSP funcional.** A CPU Allegrex, o núcleo PPSSPP, GPU PSP, áudio, sistema de arquivos e compatibilidade de jogos não foram integrados. O novo build v8.5b precisa passar pelas verificações adicionais antes de ser marcado como validado.
+## Próximas etapas
 
-## Próximos passos
-
-1. Confirmar a validação ELF32 da v8.5b.
-2. Planejar e testar o carregamento no ambiente Xbox 360/XeLL, sem assumir compatibilidade só porque o ELF compilou.
-3. Investigar a integração do núcleo PSP de forma incremental e compatível com as licenças do código-base.
+1. Confirmar o build v8.6b e corrigir erros de compilação.
+2. Adicionar testes unitários portáveis para o reset do estado.
+3. Projetar o mapa de memória PSP e a interface de leitura/escrita com testes, antes de interpretar instruções.
