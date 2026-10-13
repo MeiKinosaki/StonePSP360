@@ -31,7 +31,7 @@ jobs:
         run: |
           cc -std=c99 -Wall -Wextra -Werror tests/test_psp_core.c core/psp/psp_core.c core/psp/allegrex_state.c core/psp/psp_memory.c -o /tmp/test_psp_core
           /tmp/test_psp_core
-      - name: Host unit test — Allegrex instruction subset
+      - name: Host unit test — Allegrex extended instructions
         run: |
           cc -std=c99 -Wall -Wextra -Werror tests/test_allegrex_cpu.c core/psp/allegrex_cpu.c core/psp/allegrex_state.c core/psp/psp_memory.c -o /tmp/test_allegrex_cpu
           /tmp/test_allegrex_cpu
@@ -39,14 +39,12 @@ jobs:
         run: |
           docker run --rm -v "$GITHUB_WORKSPACE:/work/StonePSP360" -w /work/StonePSP360 free60/libxenon:latest sh -lc '
             set -eu
-            echo "DEVKITXENON=${DEVKITXENON:-<unset>}"
             test -n "${DEVKITXENON:-}"
             test -f "$DEVKITXENON/rules"
             command -v make
             command -v file
             command -v readelf
             make clean
-            find source core/psp -type f -name "*.c" -print
             make
             test -s StonePSP360.elf32
             file StonePSP360.elf32
@@ -59,7 +57,7 @@ jobs:
       - name: Upload Xbox 360 ELF executables
         uses: actions/upload-artifact@v4
         with:
-          name: StonePSP360-v8.11b-xbox360-elf
+          name: StonePSP360-v8.12b-xbox360-elf
           path: |
             StonePSP360.elf32
             xenon.elf

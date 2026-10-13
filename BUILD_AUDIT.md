@@ -1,8 +1,8 @@
-# Build audit — StonePSP360 v8.11b
+# Build audit — StonePSP360 v8.12b
 
-- Host tests: Allegrex reset, PSP RAM/aliases, core-memory lifecycle, instruction subset.
-- CPU subset: ADDU, SUBU, AND/OR/XOR/NOR, SLT/SLTU, shifts, ADDIU, SLTI/SLTIU, ANDI/ORI/XORI/LUI, BEQ/BNE/BLEZ/BGTZ, J/JAL/JR/JALR, LB/LBU/LH/LHU/LW/SB/SH/SW.
-- Delay-slot PC model is included for the implemented branches/jumps.
-- Unsupported instruction, invalid fetch and data-memory faults return explicit statuses.
-- CPU interpreter is not yet connected to a game loader or full frame run loop.
-- ELF32 PowerPC big-endian cloud build is required CI check; no hardware/game compatibility is claimed.
+- Host tests: Allegrex reset, PSP RAM/aliases, core-memory lifecycle, CPU arithmetic/memory/HI-LO/branch delay slot.
+- Additional SPECIAL instructions: MFHI/MTHI/MFLO/MTLO, MULT/MULTU, DIV/DIVU.
+- Additional REGIMM branches: BLTZ, BGEZ, BLTZAL, BGEZAL.
+- Division by zero is explicitly simplified: HI/LO are left unchanged; hardware-accurate behavior remains future work.
+- Exceptions, COP0/VFPU, GPU, audio, loader, scheduler, and full game execution remain unimplemented.
+- CI verifies host tests and an ELF32 PowerPC big-endian build. No physical Xbox 360 or game compatibility claim.
