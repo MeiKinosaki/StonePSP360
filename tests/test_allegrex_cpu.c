@@ -19,6 +19,7 @@ int main(void)
     allegrex_state_reset(&cpu);
     cpu.pc = UINT32_C(0x08000000);
     cpu.next_pc = UINT32_C(0x08000004);
+    cpu.gpr[5] = UINT32_C(0x08000000);
 
     /* addiu r1, r0, 7; addiu r2, r0, 9; addu r3, r1, r2 */
     put_instruction(&mem, UINT32_C(0x08000000), I(0x09, 0, 1, 7));
@@ -31,9 +32,9 @@ int main(void)
     assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK);
     assert(cpu.gpr[3] == 16u);
 
-    /* sw r3, 0x100(r0); lw r4, 0x100(r0) */
-    put_instruction(&mem, UINT32_C(0x0800000C), I(0x2B, 0, 3, 0x100));
-    put_instruction(&mem, UINT32_C(0x08000010), I(0x23, 0, 4, 0x100));
+    /* sw r3, 0x100(r5); lw r4, 0x100(r5) — valid PSP RAM address. */
+    put_instruction(&mem, UINT32_C(0x0800000C), I(0x2B, 5, 3, 0x100));
+    put_instruction(&mem, UINT32_C(0x08000010), I(0x23, 5, 4, 0x100));
     assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK);
     assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK);
     assert(cpu.gpr[4] == 16u);
