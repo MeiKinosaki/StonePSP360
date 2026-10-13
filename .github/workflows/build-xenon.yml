@@ -1,5 +1,4 @@
 name: StonePSP360 Cloud Toolchain and Executable
-
 on:
   workflow_dispatch:
   push:
@@ -7,26 +6,24 @@ on:
     paths:
       - 'source/**'
       - 'core/**'
+      - 'tests/**'
       - 'Makefile'
       - '.github/workflows/build-xenon.yml'
-
 permissions:
   contents: read
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
+      - name: Host unit test — Allegrex reset
+        run: |
+          cc -std=c99 -Wall -Wextra -Werror             tests/test_allegrex_state.c core/psp/allegrex_state.c             -o /tmp/test_allegrex_state
+          /tmp/test_allegrex_state
       - name: Compile with cloud libXenon toolchain
         run: |
-          docker run --rm \
-            -v "$GITHUB_WORKSPACE:/work/StonePSP360" \
-            -w /work/StonePSP360 \
-            free60/libxenon:latest \
-            sh -lc '
+          docker run --rm             -v "$GITHUB_WORKSPACE:/work/StonePSP360"             -w /work/StonePSP360             free60/libxenon:latest             sh -lc '
               set -eu
               echo "DEVKITXENON=${DEVKITXENON:-<unset>}"
               test -n "${DEVKITXENON:-}"
@@ -35,7 +32,7 @@ jobs:
               command -v file
               command -v readelf
               make clean
-              echo "Sources found:"
+              echo "C sources:"
               find source core/psp -type f -name "*.c" -print
               make
               test -s StonePSP360.elf32
@@ -46,11 +43,10 @@ jobs:
               cp StonePSP360.elf32 xenon.elf
               sha256sum StonePSP360.elf32 xenon.elf
             '
-
       - name: Upload Xbox 360 ELF executables
         uses: actions/upload-artifact@v4
         with:
-          name: StonePSP360-v8.7b-xbox360-elf
+          name: StonePSP360-v8.8b-xbox360-elf
           path: |
             StonePSP360.elf32
             xenon.elf

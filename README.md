@@ -1,25 +1,27 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.7b  
+**Versão de desenvolvimento:** v8.8b  
 **Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
 
-## v8.7b — correção da toolchain na nuvem
+## Mudanças v8.8b
 
-A compilação v8.6b falhou porque a compilação recursiva executa dentro de `build/`, enquanto o Makefile procurava os arquivos-fonte com caminhos relativos. O linker acabou sem o objeto que contém `main`.
+- Corrigida a regra de dependência $(OUTPUT).elf: $(OFILES), seguindo o template de exemplo do Free60, para que o linker receba os objetos compilados.
+- Mantida a descoberta de fontes por caminhos absolutos a partir de PROJECTDIR.
+- Adicionado teste unitário host para verificar se o reset zera os registradores Allegrex e define next_pc = 4.
+- Workflow executa o teste host antes de usar a toolchain libXenon em Docker.
+- Se a compilação e validações passarem, publica StonePSP360.elf32 e xenon.elf no artefato StonePSP360-v8.8b-xbox360-elf.
 
-Esta versão corrige a descoberta dos fontes usando `PROJECTDIR` e caminhos absolutos. O workflow da nuvem então:
+## Executável em nuvem
 
-1. executa `make clean && make` dentro do contêiner `free60/libxenon:latest`;
-2. verifica a existência e o cabeçalho de `StonePSP360.elf32` (ELF32, big-endian, PowerPC);
-3. prepara também uma cópia chamada `xenon.elf`;
-4. publica ambos no artefato `StonePSP360-v8.7b-xbox360-elf`.
+Abra Actions → StonePSP360 Cloud Toolchain and Executable. O workflow também inicia automaticamente após alterações em fontes, testes, Makefile ou no próprio workflow. Baixe o artefato apenas depois de uma execução verde.
 
-## Como obter o executável
+O xenon.elf é uma cópia do ELF32 para teste de carregamento com XeLL; não é um default.xex. A execução real em console ainda precisa ser verificada.
 
-Abra **Actions → StonePSP360 Cloud Toolchain and Executable**, execute **Run workflow** na branch `main` ou aguarde o build automático. Quando o job ficar verde, baixe o artefato na página daquela execução.
+## Limitações
 
-O arquivo `xenon.elf` é uma cópia do ELF compilado para facilitar um teste de carregamento; não é um `default.xex`, e a compatibilidade do carregamento precisa ser verificada no XeLL e no console real.
+O núcleo PSP continua em estágio inicial: há somente armazenamento de estado Allegrex e API de placeholder. Ainda não há fetch/decode/execute, mapa de memória PSP, GPU, áudio, VFPU, carregador ISO/CSO ou integração do PPSSPP. Passar nos testes e compilar ELF não comprova compatibilidade de jogos.
 
-## Estado da emulação
-
-A v8.7b ainda é um teste de inicialização libXenon com um esqueleto inicial de estado Allegrex. **Não há ainda execução de instruções PSP nem compatibilidade de jogos.** O sucesso do build não substitui teste no Xbox 360.
+## Histórico
+- v8.5b: build ELF32 anterior aprovado.
+- v8.6b–v8.7b: builds falharam por ausência de objetos no link; a última execução confirmou que o alvo ELF era linkado sem main.
+- v8.8b: adiciona dependência explícita dos objetos e teste unitário do reset. A aprovação depende da nova execução do CI.
