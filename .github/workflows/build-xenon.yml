@@ -19,7 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build ELF32 with libXenon container
+      - name: Build and validate ELF32 with libXenon
         run: |
           docker run --rm \
             -v "$GITHUB_WORKSPACE:/work/StonePSP360" \
@@ -29,18 +29,24 @@ jobs:
               set -eu
               echo "DEVKITXENON=${DEVKITXENON:-<unset>}"
               command -v make
+              command -v file
+              command -v readelf
               test -n "${DEVKITXENON:-}"
               test -f "$DEVKITXENON/rules"
               make clean
               make
               test -s StonePSP360.elf32
               file StonePSP360.elf32
+              readelf -h StonePSP360.elf32 | grep -E "Class:.*ELF32"
+              readelf -h StonePSP360.elf32 | grep -E "Data:.*big endian"
+              readelf -h StonePSP360.elf32 | grep -E "Machine:.*PowerPC"
+              sha256sum StonePSP360.elf32
             '
 
       - name: Upload ELF32 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: StonePSP360-v8.4b-elf32
+          name: StonePSP360-v8.5b-elf32
           path: StonePSP360.elf32
           if-no-files-found: error
           retention-days: 14
