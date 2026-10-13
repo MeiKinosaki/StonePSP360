@@ -1,27 +1,27 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.8b  
+**Versão de desenvolvimento:** v8.9b  
 **Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
 
-## Mudanças v8.8b
+## Mudanças v8.9b
 
-- Corrigida a regra de dependência $(OUTPUT).elf: $(OFILES), seguindo o template de exemplo do Free60, para que o linker receba os objetos compilados.
-- Mantida a descoberta de fontes por caminhos absolutos a partir de PROJECTDIR.
-- Adicionado teste unitário host para verificar se o reset zera os registradores Allegrex e define next_pc = 4.
-- Workflow executa o teste host antes de usar a toolchain libXenon em Docker.
-- Se a compilação e validações passarem, publica StonePSP360.elf32 e xenon.elf no artefato StonePSP360-v8.8b-xbox360-elf.
+- Adicionado módulo isolado de RAM PSP de 32 MiB.
+- Acesso de 8, 16 e 32 bits em little-endian com validação de limites.
+- Mapeamento de aliases de RAM: 0x08000000, 0x48000000, 0x88000000 e 0xC8000000.
+- Adicionado teste host para leituras/escritas, aliases, endianess e endereços inválidos.
+- Workflow executa os testes host antes da compilação libXenon na nuvem.
 
 ## Executável em nuvem
 
-Abra Actions → StonePSP360 Cloud Toolchain and Executable. O workflow também inicia automaticamente após alterações em fontes, testes, Makefile ou no próprio workflow. Baixe o artefato apenas depois de uma execução verde.
+Abra [GitHub Actions](https://github.com/MeiKinosaki/StonePSP360/actions) → **StonePSP360 Cloud Toolchain and Executable**. O workflow inicia após alterações em fontes, testes, Makefile, README ou workflow. Baixe o artefato apenas após uma execução verde.
 
-O xenon.elf é uma cópia do ELF32 para teste de carregamento com XeLL; não é um default.xex. A execução real em console ainda precisa ser verificada.
+O arquivo `xenon.elf` é uma cópia do ELF32 para teste de carregamento com XeLL; não é um `default.xex`. A execução real em console ainda precisa ser verificada.
 
-## Limitações
+## Limitações atuais
 
-O núcleo PSP continua em estágio inicial: há somente armazenamento de estado Allegrex e API de placeholder. Ainda não há fetch/decode/execute, mapa de memória PSP, GPU, áudio, VFPU, carregador ISO/CSO ou integração do PPSSPP. Passar nos testes e compilar ELF não comprova compatibilidade de jogos.
+O módulo de RAM ainda **não está conectado** ao núcleo Allegrex. O núcleo não implementa fetch/decode/execute, GPU, áudio, VFPU, carregador ISO/CSO ou compatibilidade com jogos. Passar nos testes host e compilar um ELF não comprova execução no Xbox 360 nem compatibilidade de jogos.
 
 ## Histórico
-- v8.5b: build ELF32 anterior aprovado.
-- v8.6b–v8.7b: builds falharam por ausência de objetos no link; a última execução confirmou que o alvo ELF era linkado sem main.
-- v8.8b: adiciona dependência explícita dos objetos e teste unitário do reset. A aprovação depende da nova execução do CI.
+
+- v8.8b: corrigida a regra de link dos objetos e adicionado teste do reset Allegrex.
+- v8.9b: primeiro módulo isolado de memória RAM PSP com testes de unidade.

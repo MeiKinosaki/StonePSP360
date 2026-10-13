@@ -1,17 +1,9 @@
-# Auditoria — StonePSP360
+# Build audit — StonePSP360 v8.9b
 
-## Histórico confirmado
-- v8.5b: [x] GitHub Actions compilou e publicou ELF32 PowerPC.
-- v8.6b: [x] Esqueleto Allegrex adicionado; [x] build falhou com undefined reference to main.
-- v8.7b: [x] descoberta de fontes melhorada; [x] logs ainda mostraram link sem main.
-
-## v8.8b
-- [x] Regra $(OUTPUT).elf: $(OFILES) adicionada, conforme o template Free60.
-- [x] Teste host para reset do estado Allegrex adicionado.
-- [x] Workflow executa teste host e valida cabeçalho ELF32/big-endian/PowerPC.
-- [ ] Teste host aprovado no Actions.
-- [ ] ELF32 v8.8b gerado e artefato publicado.
-- [ ] Teste em Xbox 360/XeLL.
-- [ ] Núcleo PSP funcional.
-
-**Nota:** o teste unitário valida apenas a rotina de reset. A versão ainda não executa instruções PSP nem jogos.
+- Target: Xbox 360 with Free60/libXenon.
+- Cloud CI: host tests for Allegrex reset and PSP RAM, followed by ELF32 PowerPC big-endian build.
+- PSP RAM: 32 MiB allocation; 8/16/32-bit little-endian access; aliases at 0x08000000, 0x48000000, 0x88000000, 0xC8000000.
+- Memory module status: unit-tested in host CI if the workflow passes; not integrated with Allegrex execution.
+- Output artifact: StonePSP360-v8.9b-xbox360-elf, containing StonePSP360.elf32 and xenon.elf.
+- xenon.elf is an ELF32 copy, not default.xex.
+- No claim of physical Xbox 360/XeLL validation or game compatibility without separate testing.

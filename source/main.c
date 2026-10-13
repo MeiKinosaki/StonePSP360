@@ -19,12 +19,13 @@ int main(void)
     usb_do_poll();
     console_clrscr();
     core_status = psp_core_init();
-    puts("StonePSP360 v8.8b");
+    puts("StonePSP360 v8.9b");
     puts("Xbox 360 / libXenon platform test");
     puts("");
     puts("PSP core:");
     puts(psp_core_status_string(core_status));
     puts("");
+    puts("PSP RAM module implemented; not yet connected to CPU core.");
     puts("PSP game execution is not implemented yet.");
     puts("Press Guide or Y to exit.");
     while (true) {
