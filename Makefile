@@ -1,4 +1,4 @@
-# StonePSP360 v8.6b — libXenon build
+# StonePSP360 v8.7b — libXenon cloud build
 .SUFFIXES:
 
 ifeq ($(strip $(DEVKITXENON)),)
@@ -21,13 +21,14 @@ LIBDIRS :=
 
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 export OUTPUT := $(CURDIR)/$(TARGET)
-export VPATH := $(foreach dir,$(SOURCES),$(CURDIR)/$(dir))
-export DEPSDIR := $(CURDIR)/$(BUILD)
+export PROJECTDIR := $(CURDIR)
+export VPATH := $(foreach dir,$(SOURCES),$(PROJECTDIR)/$(dir))
+export DEPSDIR := $(PROJECTDIR)/$(BUILD)
 
-CFILES := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
-CPPFILES := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
-sFILES := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
-SFILES := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.S)))
+CFILES := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(PROJECTDIR)/$(dir)/*.c)))
+CPPFILES := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(PROJECTDIR)/$(dir)/*.cpp)))
+sFILES := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(PROJECTDIR)/$(dir)/*.s)))
+SFILES := $(foreach dir,$(SOURCES),$(notdir $(wildcard $(PROJECTDIR)/$(dir)/*.S)))
 BINFILES :=
 
 ifeq ($(strip $(CPPFILES)),)
@@ -37,7 +38,7 @@ export LD := $(CXX)
 endif
 
 export OFILES := $(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(sFILES:.s=.o) $(SFILES:.S=.o)
-export INCLUDE := $(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) -I$(CURDIR)/$(BUILD) -I$(LIBXENON_INC)
+export INCLUDE := $(foreach dir,$(INCLUDES),-I$(PROJECTDIR)/$(dir)) -I$(PROJECTDIR)/$(BUILD) -I$(LIBXENON_INC)
 export LIBPATHS := $(foreach dir,$(LIBDIRS),-L$(dir)/lib) -L$(LIBXENON_LIB)
 
 .PHONY: all clean
@@ -45,10 +46,10 @@ all: $(BUILD) $(OUTPUT).elf32
 
 $(BUILD):
 	@mkdir -p $@
-	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(PROJECTDIR)/Makefile
 
 clean:
-	@rm -rf $(BUILD) $(OUTPUT).elf $(OUTPUT).elf32 $(OUTPUT).elf32.map
+	@rm -rf $(BUILD) $(OUTPUT).elf $(OUTPUT).elf32 $(OUTPUT).elf32.map xenon.elf
 
 else
 DEPENDS := $(OFILES:.o=.d)

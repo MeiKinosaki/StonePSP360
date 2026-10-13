@@ -1,4 +1,4 @@
-name: StonePSP360 libXenon build
+name: StonePSP360 Cloud Toolchain and Executable
 
 on:
   workflow_dispatch:
@@ -20,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build and validate ELF32 with libXenon
+      - name: Compile with cloud libXenon toolchain
         run: |
           docker run --rm \
             -v "$GITHUB_WORKSPACE:/work/StonePSP360" \
@@ -29,25 +29,30 @@ jobs:
             sh -lc '
               set -eu
               echo "DEVKITXENON=${DEVKITXENON:-<unset>}"
+              test -n "${DEVKITXENON:-}"
+              test -f "$DEVKITXENON/rules"
               command -v make
               command -v file
               command -v readelf
-              test -n "${DEVKITXENON:-}"
-              test -f "$DEVKITXENON/rules"
               make clean
+              echo "Sources found:"
+              find source core/psp -type f -name "*.c" -print
               make
               test -s StonePSP360.elf32
               file StonePSP360.elf32
               readelf -h StonePSP360.elf32 | grep -E "Class:.*ELF32"
               readelf -h StonePSP360.elf32 | grep -E "Data:.*big endian"
               readelf -h StonePSP360.elf32 | grep -E "Machine:.*PowerPC"
-              sha256sum StonePSP360.elf32
+              cp StonePSP360.elf32 xenon.elf
+              sha256sum StonePSP360.elf32 xenon.elf
             '
 
-      - name: Upload ELF32 artifact
+      - name: Upload Xbox 360 ELF executables
         uses: actions/upload-artifact@v4
         with:
-          name: StonePSP360-v8.6b-elf32
-          path: StonePSP360.elf32
+          name: StonePSP360-v8.7b-xbox360-elf
+          path: |
+            StonePSP360.elf32
+            xenon.elf
           if-no-files-found: error
           retention-days: 14

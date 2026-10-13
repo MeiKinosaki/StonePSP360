@@ -24,13 +24,13 @@ int main(void)
 
     core_status = psp_core_init();
 
-    puts("StonePSP360 v8.6b");
+    puts("StonePSP360 v8.7b");
     puts("Xbox 360 / libXenon platform test");
     puts("");
-    puts("PSP core scaffold:");
+    puts("PSP core:");
     puts(psp_core_status_string(core_status));
     puts("");
-    puts("No PSP instructions or games are emulated yet.");
+    puts("PSP game execution is not implemented yet.");
     puts("Press Guide or Y to exit.");
 
     while (true) {
