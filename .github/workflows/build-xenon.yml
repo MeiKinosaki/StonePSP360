@@ -1,0 +1,46 @@
+name: StonePSP360 libXenon build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'source/**'
+      - 'Makefile'
+      - '.github/workflows/build-xenon.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build ELF32 with libXenon container
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:/work/StonePSP360" \
+            -w /work/StonePSP360 \
+            free60/libxenon:latest \
+            sh -lc '
+              set -eu
+              echo "DEVKITXENON=${DEVKITXENON:-<unset>}"
+              command -v make
+              test -n "${DEVKITXENON:-}"
+              test -f "$DEVKITXENON/rules"
+              make clean
+              make
+              test -s StonePSP360.elf32
+              file StonePSP360.elf32
+            '
+
+      - name: Upload ELF32 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: StonePSP360-v8.4b-elf32
+          path: StonePSP360.elf32
+          if-no-files-found: error
+          retention-days: 14
