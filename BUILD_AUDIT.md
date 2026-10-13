@@ -1,12 +1,18 @@
-# Build audit — StonePSP360 v8.4b
+# Auditoria de build — StonePSP360
 
-- [x] Repositório confirmado: MeiKinosaki/StonePSP360 (branch main).
-- [x] Fonte de teste da plataforma adicionada em source/main.c.
-- [x] Makefile configurado segundo a estrutura do template Free60 xenon-examples.
-- [x] Workflow de build em nuvem adicionada.
-- [ ] Workflow executada com sucesso.
-- [ ] Artefato ELF32 produzido e inspecionado.
-- [ ] Teste no Xbox 360/XeLL.
-- [ ] Núcleo PSP integrado.
+## v8.4b
+- [x] GitHub Actions concluiu o job com sucesso.
+- [x] ELF32 gerado: `StonePSP360.elf32`.
+- [x] Log identificou: ELF 32-bit, MSB/big-endian, PowerPC.
+- [x] Artefato `StonePSP360-v8.4b-elf32` publicado no Actions.
+- [ ] Testado em Xbox 360/XeLL.
+- [ ] Núcleo de emulação PSP integrado.
 
-**Importante:** criar os arquivos e validar a sintaxe não equivale a compilar. Nenhum binário funcional ou teste em hardware é declarado nesta auditoria.
+## v8.5b
+- [x] Fonte atualizada com identificação de versão e mensagens de estado explícitas.
+- [x] Workflow adiciona verificações de ELF32, big-endian, PowerPC e SHA-256.
+- [ ] Nova execução do workflow concluída com sucesso.
+- [ ] Artefato v8.5b verificado.
+- [ ] Testado em hardware real.
+
+**Nota:** sucesso de compilação do teste de plataforma não significa emulação PSP funcional nem validação no console.
