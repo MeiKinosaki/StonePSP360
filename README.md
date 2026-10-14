@@ -1,19 +1,19 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.15b  
+**Versão de desenvolvimento:** v8.16b  
 **Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
 
-## Mudanças v8.15b
+## Mudanças v8.16b
 
-- Adicionado inspetor seguro de cabeçalho para PBP e ELF32 little-endian MIPS.
-- Valida os oito offsets de seção PBP, ordem, limites e tamanho do cabeçalho.
-- Valida identificador ELF, classe, endianness, tipo executável, máquina MIPS e tabela de program headers.
-- Detecta quando DATA.PSP contém diretamente um ELF suportado e reporta entry point e tabela de segmentos.
-- Testes host cobrem ELF válido, PBP vazio, PBP com payload ELF, offsets inválidos e arquivos truncados.
+- O loader agora pode carregar segmentos ELF32 MIPS `PT_LOAD` de um ELF simples ou PBP cujo `DATA.PSP` contenha diretamente um ELF.
+- Valida os intervalos do arquivo, limites da RAM, `p_filesz <= p_memsz`, alinhamento e se o entry point pertence a um segmento executável.
+- Todos os segmentos são pré-validados antes de modificar a RAM.
+- Copia os bytes de cada segmento e zera a região BSS (`p_memsz - p_filesz`).
+- Testes host cobrem carga ELF/PBP, BSS e destino inválido sem alteração parcial.
 
 ## Limitações
 
-Isto é uma etapa de inspeção, não um carregador completo. Muitos EBOOT.PBP contêm PRX comprimido/criptografado em DATA.PSP; a ferramenta não descompacta/descriptografa PRX, não mapeia segmentos para RAM e não inicializa imports do PSP. Ainda faltam loader completo, exceções/COP0/VFPU, scheduler, GPU/GE, áudio, firmware/serviços e compatibilidade validada. Não há teste confirmado em console físico.
+O loader não descriptografa nem descomprime PRX, não resolve imports, relocations ou NIDs, e não carrega jogos comerciais de forma geral. O arquivo ainda não é lido do disco pela interface do Xbox; o loader recebe um buffer em memória. O entry point ainda precisa ser passado ao núcleo CPU pelo código chamador. VFPU, exceções/COP0, scheduler, GPU/GE, áudio e serviços PSP continuam incompletos. Não há teste confirmado em console físico.
 
 ## Build na nuvem
 
@@ -28,4 +28,5 @@ Veja [GitHub Actions](https://github.com/MeiKinosaki/StonePSP360/actions). O art
 - v8.12b: operações HI/LO, multiplicação/divisão e branches REGIMM.
 - v8.13b: loop de execução Allegrex limitado por orçamento.
 - v8.14b: API pública do núcleo executa o interpretador Allegrex com orçamento limitado.
-- v8.15b: inspeção validada de cabeçalhos PBP e ELF32 MIPS.
+- v8.15b: inspeção de cabeçalhos PBP e ELF32 MIPS.
+- v8.16b: validação e carga de segmentos PT_LOAD, com zeragem de BSS.
