@@ -1,8 +1,7 @@
-# Build audit — StonePSP360 v8.16b
+# Build audit — StonePSP360 v8.17b
 
-- Loader supports raw ELF32 little-endian MIPS ET_EXEC and PBP with a direct ELF in DATA.PSP.
-- PT_LOAD headers are preflighted for file range, guest RAM range, p_filesz <= p_memsz, alignment, and executable entry point.
-- Segment bytes are copied into PSP RAM and BSS tails are zeroed.
-- All loadable segment ranges are checked before RAM is modified; tests include invalid destination preserving a marker.
-- PRX crypto/decompression, relocations, imports/NIDs, disk I/O, scheduler, GPU/audio and real-hardware validation remain absent.
-- CI tests CPU reset, RAM, core integration, Allegrex execution, and PBP/ELF loader before cloud libXenon ELF32 PowerPC build.
+- Added psp_core_load_image(data, size, entry_point).
+- The API requires an initialized core, calls the validated PBP/ELF loader, then resets Allegrex state to the loaded entry PC.
+- Host integration test loads a synthetic ELF through the public API, executes four supported instructions and verifies a RAM store.
+- CI adds loader source to the core integration test and compiles with -Wall -Wextra -Werror.
+- No PRX decryption/decompression, relocations, import resolution, device file I/O, scheduler, GPU/audio, commercial game support or hardware validation is claimed.

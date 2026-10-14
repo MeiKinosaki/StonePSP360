@@ -2,6 +2,7 @@
 
 #include "allegrex_cpu.h"
 #include "allegrex_state.h"
+#include "psp_loader.h"
 #include "psp_memory.h"
 
 static AllegrexState g_cpu_state;
@@ -42,6 +43,25 @@ PspCoreStatus psp_core_start(uint32_t entry_pc)
     return PSP_CORE_OK;
 }
 
+PspCoreStatus psp_core_load_image(const uint8_t *data, size_t size,
+                                  uint32_t *entry_point)
+{
+    uint32_t loaded_entry;
+    PspLoaderStatus status;
+
+    if (!g_initialized || data == NULL || entry_point == NULL)
+        return PSP_CORE_INVALID_ARGUMENT;
+
+    status = psp_loader_load(data, size, &g_memory, &loaded_entry);
+    if (status != PSP_LOADER_OK) return PSP_CORE_LOAD_ERROR;
+
+    if (psp_core_start(loaded_entry) != PSP_CORE_OK)
+        return PSP_CORE_LOAD_ERROR;
+
+    *entry_point = loaded_entry;
+    return PSP_CORE_OK;
+}
+
 PspCoreStatus psp_core_run_steps(uint32_t max_steps, uint32_t *executed_steps)
 {
     AllegrexStepResult result;
@@ -61,7 +81,6 @@ PspCoreStatus psp_core_run_steps(uint32_t max_steps, uint32_t *executed_steps)
 PspCoreStatus psp_core_run_frame(void)
 {
     if (!g_initialized) return PSP_CORE_INVALID_ARGUMENT;
-    /* A frame needs the PSP scheduler, display list/GPU and timing model. */
     return PSP_CORE_NOT_IMPLEMENTED;
 }
 
@@ -69,27 +88,22 @@ bool psp_core_read8(uint32_t address, uint8_t *value)
 {
     return g_initialized && psp_memory_read8(&g_memory, address, value);
 }
-
 bool psp_core_read16(uint32_t address, uint16_t *value)
 {
     return g_initialized && psp_memory_read16(&g_memory, address, value);
 }
-
 bool psp_core_read32(uint32_t address, uint32_t *value)
 {
     return g_initialized && psp_memory_read32(&g_memory, address, value);
 }
-
 bool psp_core_write8(uint32_t address, uint8_t value)
 {
     return g_initialized && psp_memory_write8(&g_memory, address, value);
 }
-
 bool psp_core_write16(uint32_t address, uint16_t value)
 {
     return g_initialized && psp_memory_write16(&g_memory, address, value);
 }
-
 bool psp_core_write32(uint32_t address, uint32_t value)
 {
     return g_initialized && psp_memory_write32(&g_memory, address, value);
@@ -104,6 +118,7 @@ const char *psp_core_status_string(PspCoreStatus status)
     case PSP_CORE_OUT_OF_MEMORY: return "could not allocate PSP RAM";
     case PSP_CORE_CPU_ILLEGAL_INSTRUCTION: return "guest CPU encountered an unsupported instruction";
     case PSP_CORE_CPU_MEMORY_FAULT: return "guest CPU memory access failed";
+    case PSP_CORE_LOAD_ERROR: return "image validation/loading failed";
     default: return "unknown status";
     }
 }

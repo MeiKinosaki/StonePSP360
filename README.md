@@ -1,19 +1,19 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.16b  
+**Versão de desenvolvimento:** v8.17b  
 **Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
 
-## Mudanças v8.16b
+## Mudanças v8.17b
 
-- O loader agora pode carregar segmentos ELF32 MIPS `PT_LOAD` de um ELF simples ou PBP cujo `DATA.PSP` contenha diretamente um ELF.
-- Valida os intervalos do arquivo, limites da RAM, `p_filesz <= p_memsz`, alinhamento e se o entry point pertence a um segmento executável.
-- Todos os segmentos são pré-validados antes de modificar a RAM.
-- Copia os bytes de cada segmento e zera a região BSS (`p_memsz - p_filesz`).
-- Testes host cobrem carga ELF/PBP, BSS e destino inválido sem alteração parcial.
+- Adicionada a API pública `psp_core_load_image`.
+- A API aceita um buffer com ELF32 MIPS simples ou PBP cujo DATA.PSP contenha diretamente um ELF reconhecido.
+- Usa o loader para validar e copiar segmentos para RAM, depois configura o PC da Allegrex com o entry point.
+- Teste de integração constrói um ELF de teste, carrega-o pela API pública, executa quatro instruções e verifica o resultado de um store na RAM.
+- Entradas inválidas retornam status de erro em vez de alegar carregamento bem-sucedido.
 
 ## Limitações
 
-O loader não descriptografa nem descomprime PRX, não resolve imports, relocations ou NIDs, e não carrega jogos comerciais de forma geral. O arquivo ainda não é lido do disco pela interface do Xbox; o loader recebe um buffer em memória. O entry point ainda precisa ser passado ao núcleo CPU pelo código chamador. VFPU, exceções/COP0, scheduler, GPU/GE, áudio e serviços PSP continuam incompletos. Não há teste confirmado em console físico.
+Ainda não há leitura de arquivos do dispositivo Xbox, PRX decriptado/descomprimido, relocations, imports/NIDs, firmware/serviços PSP, scheduler, GPU/GE ou áudio. O código de teste é um ELF sintético e não prova compatibilidade com jogos comerciais. Não há teste confirmado em console físico.
 
 ## Build na nuvem
 
@@ -30,3 +30,4 @@ Veja [GitHub Actions](https://github.com/MeiKinosaki/StonePSP360/actions). O art
 - v8.14b: API pública do núcleo executa o interpretador Allegrex com orçamento limitado.
 - v8.15b: inspeção de cabeçalhos PBP e ELF32 MIPS.
 - v8.16b: validação e carga de segmentos PT_LOAD, com zeragem de BSS.
+- v8.17b: API pública integra carregamento ELF e inicialização do PC da CPU.
