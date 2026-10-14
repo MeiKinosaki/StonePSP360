@@ -35,6 +35,10 @@ jobs:
         run: |
           cc -std=c99 -Wall -Wextra -Werror tests/test_allegrex_cpu.c core/psp/allegrex_cpu.c core/psp/allegrex_state.c core/psp/psp_memory.c -o /tmp/test_allegrex_cpu
           /tmp/test_allegrex_cpu
+      - name: Host unit test — PSP PBP and ELF inspection
+        run: |
+          cc -std=c99 -Wall -Wextra -Werror tests/test_psp_loader.c core/psp/psp_loader.c -o /tmp/test_psp_loader
+          /tmp/test_psp_loader
       - name: Compile with cloud libXenon toolchain
         run: |
           docker run --rm -v "$GITHUB_WORKSPACE:/work/StonePSP360" -w /work/StonePSP360 free60/libxenon:latest sh -lc '
@@ -57,7 +61,7 @@ jobs:
       - name: Upload Xbox 360 ELF executables
         uses: actions/upload-artifact@v4
         with:
-          name: StonePSP360-v8.14b-xbox360-elf
+          name: StonePSP360-v8.15b-xbox360-elf
           path: |
             StonePSP360.elf32
             xenon.elf
