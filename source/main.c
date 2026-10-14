@@ -19,14 +19,14 @@ int main(void)
     usb_do_poll();
     console_clrscr();
     core_status = psp_core_init();
-    puts("StonePSP360 v8.10b");
+    puts("StonePSP360 v8.14b");
     puts("Xbox 360 / libXenon platform test");
     puts("");
     puts("PSP core:");
     puts(psp_core_status_string(core_status));
     puts("");
-    puts("PSP RAM is now owned by the core.");
-    puts("Allegrex instruction execution is not implemented.");
+    puts("Allegrex bounded execution is connected to the core API.");
+    puts("Game loading, frame scheduling, GPU and audio are not implemented.");
     puts("Press Guide or Y to exit.");
     while (true) {
         usb_do_poll();

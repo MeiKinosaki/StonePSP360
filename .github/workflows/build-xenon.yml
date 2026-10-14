@@ -27,9 +27,9 @@ jobs:
         run: |
           cc -std=c99 -Wall -Wextra -Werror tests/test_psp_memory.c core/psp/psp_memory.c -o /tmp/test_psp_memory
           /tmp/test_psp_memory
-      - name: Host unit test — core memory integration
+      - name: Host unit test — core CPU integration
         run: |
-          cc -std=c99 -Wall -Wextra -Werror tests/test_psp_core.c core/psp/psp_core.c core/psp/allegrex_state.c core/psp/psp_memory.c -o /tmp/test_psp_core
+          cc -std=c99 -Wall -Wextra -Werror tests/test_psp_core.c core/psp/psp_core.c core/psp/allegrex_cpu.c core/psp/allegrex_state.c core/psp/psp_memory.c -o /tmp/test_psp_core
           /tmp/test_psp_core
       - name: Host unit test — Allegrex CPU and run loop
         run: |
@@ -57,7 +57,7 @@ jobs:
       - name: Upload Xbox 360 ELF executables
         uses: actions/upload-artifact@v4
         with:
-          name: StonePSP360-v8.13b-xbox360-elf
+          name: StonePSP360-v8.14b-xbox360-elf
           path: |
             StonePSP360.elf32
             xenon.elf

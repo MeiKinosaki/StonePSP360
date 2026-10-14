@@ -1,19 +1,19 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.13b  
+**Versão de desenvolvimento:** v8.14b  
 **Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
 
-## Mudanças v8.13b
+## Mudanças v8.14b
 
-- Adicionada a API `allegrex_run`, que executa até um orçamento de instruções por chamada.
-- A API informa quantas instruções concluíram e para ao encontrar instrução ilegal ou falha de memória.
-- Orçamento zero é um no-op; a execução é limitada para permitir que um futuro scheduler controle o tempo de CPU.
-- Teste automatizado cobre execução de três instruções e orçamento zero.
-- CI executa quatro testes host e compila ELF32 PowerPC big-endian na toolchain em nuvem.
+- Ligada a API `allegrex_run` ao núcleo PSP por `psp_core_start` e `psp_core_run_steps`.
+- O núcleo converte resultados da CPU em estados explícitos para instrução ilegal e falha de memória.
+- Teste de integração escreve duas instruções na RAM, inicia a CPU no endereço de entrada e executa duas etapas pela API pública.
+- `psp_core_run_frame` continua explicitamente não implementado até existir scheduler, GPU e temporização.
+- CI compila os testes host e o ELF32 PowerPC big-endian na toolchain em nuvem.
 
 ## Limitações
 
-O interpretador ainda é parcial e não está conectado a um carregador de jogos ou scheduler do PSP. Exceções completas, COP0, VFPU, caches, temporização real, firmware/serviços, ISO/CSO, GPU/GE e áudio ainda não estão implementados. Não há compatibilidade de jogos validada.
+O interpretador Allegrex é parcial. Ainda faltam carregador de executáveis/ISO/CSO, exceções completas, COP0, VFPU, caches, scheduler PSP, GPU/GE, áudio, firmware/serviços e compatibilidade de jogos validada. Não há teste confirmado em console físico.
 
 ## Build na nuvem
 
@@ -27,3 +27,4 @@ Veja [GitHub Actions](https://github.com/MeiKinosaki/StonePSP360/actions). O art
 - v8.11b: primeiro subconjunto de instruções Allegrex.
 - v8.12b: operações HI/LO, multiplicação/divisão e branches REGIMM.
 - v8.13b: loop de execução Allegrex limitado por orçamento.
+- v8.14b: API pública do núcleo executa o interpretador Allegrex com orçamento limitado.

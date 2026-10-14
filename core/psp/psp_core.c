@@ -1,5 +1,6 @@
 #include "psp_core.h"
 
+#include "allegrex_cpu.h"
 #include "allegrex_state.h"
 #include "psp_memory.h"
 
@@ -19,8 +20,6 @@ PspCoreStatus psp_core_init(void)
 
     allegrex_state_reset(&g_cpu_state);
     g_initialized = 1;
-
-    /* RAM is now owned by the core; CPU instruction execution is still a stub. */
     return PSP_CORE_OK;
 }
 
@@ -33,13 +32,36 @@ void psp_core_shutdown(void)
     g_initialized = 0;
 }
 
+PspCoreStatus psp_core_start(uint32_t entry_pc)
+{
+    if (!g_initialized) return PSP_CORE_INVALID_ARGUMENT;
+    if ((entry_pc & 3u) != 0u) return PSP_CORE_INVALID_ARGUMENT;
+    allegrex_state_reset(&g_cpu_state);
+    g_cpu_state.pc = entry_pc;
+    g_cpu_state.next_pc = entry_pc + 4u;
+    return PSP_CORE_OK;
+}
+
+PspCoreStatus psp_core_run_steps(uint32_t max_steps, uint32_t *executed_steps)
+{
+    AllegrexStepResult result;
+    if (executed_steps != NULL) *executed_steps = 0u;
+    if (!g_initialized) return PSP_CORE_INVALID_ARGUMENT;
+
+    result = allegrex_run(&g_cpu_state, &g_memory, max_steps, executed_steps);
+    switch (result) {
+    case ALLEGREX_STEP_OK: return PSP_CORE_OK;
+    case ALLEGREX_STEP_ILLEGAL_INSTRUCTION: return PSP_CORE_CPU_ILLEGAL_INSTRUCTION;
+    case ALLEGREX_STEP_MEMORY_FAULT: return PSP_CORE_CPU_MEMORY_FAULT;
+    case ALLEGREX_STEP_INVALID_ARGUMENT: return PSP_CORE_INVALID_ARGUMENT;
+    default: return PSP_CORE_NOT_IMPLEMENTED;
+    }
+}
+
 PspCoreStatus psp_core_run_frame(void)
 {
-    if (!g_initialized) {
-        return PSP_CORE_INVALID_ARGUMENT;
-    }
-
-    /* No guest instructions are executed in v8.10b. */
+    if (!g_initialized) return PSP_CORE_INVALID_ARGUMENT;
+    /* A frame needs the PSP scheduler, display list/GPU and timing model. */
     return PSP_CORE_NOT_IMPLEMENTED;
 }
 
@@ -76,15 +98,12 @@ bool psp_core_write32(uint32_t address, uint32_t value)
 const char *psp_core_status_string(PspCoreStatus status)
 {
     switch (status) {
-    case PSP_CORE_OK:
-        return "initialized; CPU execution not implemented";
-    case PSP_CORE_NOT_IMPLEMENTED:
-        return "CPU instruction execution not implemented";
-    case PSP_CORE_INVALID_ARGUMENT:
-        return "not initialized";
-    case PSP_CORE_OUT_OF_MEMORY:
-        return "could not allocate PSP RAM";
-    default:
-        return "unknown status";
+    case PSP_CORE_OK: return "operation completed";
+    case PSP_CORE_NOT_IMPLEMENTED: return "frame execution requires scheduler, GPU and timing";
+    case PSP_CORE_INVALID_ARGUMENT: return "invalid argument or core not initialized";
+    case PSP_CORE_OUT_OF_MEMORY: return "could not allocate PSP RAM";
+    case PSP_CORE_CPU_ILLEGAL_INSTRUCTION: return "guest CPU encountered an unsupported instruction";
+    case PSP_CORE_CPU_MEMORY_FAULT: return "guest CPU memory access failed";
+    default: return "unknown status";
     }
 }
