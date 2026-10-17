@@ -1,19 +1,22 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.18b  
+**Versão de desenvolvimento:** v8.19b  
 **Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
 
-## Mudanças v8.18b
+## Mudanças v8.19b
 
-- Adicionado teste dedicado para fluxo de controle Allegrex.
-- Testa branch BEQ tomado, execução do delay slot e chegada ao destino.
-- Testa branch não tomado e continuação sequencial.
-- Testa falha de leitura de memória e opcode inválido, verificando que o PC da instrução com falha é preservado.
-- CI compila o teste com `-Wall -Wextra -Werror`.
+- Implementadas as instruções Allegrex/MIPS `CLZ` e `CLO` via opcode SPECIAL2.
+- Implementadas `MOVZ` e `MOVN` com preservação do registrador destino quando a condição não é satisfeita.
+- Adicionado teste dedicado para resultados, entradas zero, condições verdadeiras/falsas e registrador `$zero`.
+- CI compila e executa o novo teste com `-Wall -Wextra -Werror`.
+
+## Histórico recente
+
+- v8.18b: teste dedicado de delay slots, branches, falha de memória e opcode inválido..
 
 ## Componentes e limitações
 
-CPU Allegrex: subconjunto inteiro interpretado; ainda faltam muitas instruções Allegrex, FPU, VFPU, COP0/exceções completas e instruções branch-likely.  
+CPU Allegrex: subconjunto inteiro interpretado; ainda faltam muitas instruções Allegrex, FPU, VFPU, COP0/exceções completas e instruções branch-likely e várias instruções SPECIAL2.  
 Memória: RAM simulada e aliases iniciais; VRAM, scratchpad e MMIO ainda não implementados.  
 Loader: ELF32 MIPS direto e PBP com ELF simples no DATA.PSP; sem PRX criptografado/comprimido, relocations, imports/NIDs ou leitura de arquivos do console.  
 Sistema: sem scheduler completo, HLE/kernel, input, áudio, GPU/GE ou execução de jogos comerciais comprovada.  
@@ -36,3 +39,4 @@ Veja [GitHub Actions](https://github.com/MeiKinosaki/StonePSP360/actions).
 - v8.16b: validação e carga de segmentos PT_LOAD, com zeragem de BSS.
 - v8.17b: API pública integra carregamento ELF e inicialização do PC da CPU.
 - v8.18b: testes dedicados de delay slots, fluxo de branch e caminhos de erro.
+- v8.19b: CLZ/CLO em SPECIAL2, MOVZ/MOVN e regressões dedicadas.

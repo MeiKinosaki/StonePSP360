@@ -1,7 +1,8 @@
-# Build audit — StonePSP360 v8.18b
+# Build audit — StonePSP360 v8.19b
 
-- Added dedicated host test for taken and not-taken BEQ delay-slot behaviour.
-- Added assertions for PC progression after a branch, instruction execution in the delay slot, and arrival at target.
-- Added memory-fault and illegal-instruction checks confirming the faulting PC is retained.
-- CI compiles this new test under C99 with -Wall -Wextra -Werror.
-- This improves regression coverage; it does not add missing CPU opcodes, GPU/audio, system services, or hardware validation.
+- Implemented SPECIAL2 CLZ and CLO with a portable leading-bit count helper.
+- Implemented SPECIAL MOVZ and MOVN; destination is changed only when the condition is met.
+- Added a dedicated host regression test covering CLZ/CLO values, zero input, conditional writes, and immutable register zero.
+- Updated GitHub Actions to run the test with C99, -Wall, -Wextra, and -Werror and label the uploaded ELF artifact v8.19b.
+- Scope remains limited: no full Allegrex ISA, FPU/VFPU, COP0 exception model, GPU/GE, audio, PSP kernel/HLE, PRX decryption, commercial-game validation, or confirmed physical-console test.
+- The cloud output remains ELF32 PowerPC for Xbox 360; xenon.elf is a copy of the ELF32 and is not default.xex.

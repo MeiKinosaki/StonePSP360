@@ -8,6 +8,18 @@ static uint32_t sign_extend16(uint32_t value)
     return (uint32_t)(int32_t)(int16_t)(value & UINT32_C(0xFFFF));
 }
 
+
+static uint32_t count_leading(uint32_t value, bool ones)
+{
+    uint32_t count = 0u;
+    uint32_t mask = UINT32_C(0x80000000);
+    while (mask != 0u && (((value & mask) != 0u) == ones)) {
+        ++count;
+        mask >>= 1;
+    }
+    return count;
+}
+
 static bool load_instruction(const PspMemory *memory, uint32_t pc, uint32_t *op)
 {
     return (pc & 3u) == 0u && psp_memory_read32(memory, pc, op);
@@ -92,6 +104,8 @@ AllegrexStepResult allegrex_step(AllegrexState *state, PspMemory *memory)
         case 0x06u: result = b >> (a & 31u); write_gpr = true; break;
         case 0x07u: result = (uint32_t)((int32_t)b >> (a & 31u)); write_gpr = true; break;
         case 0x08u: state->next_pc = a; break; /* JR */
+        case 0x0Au: if (b == 0u) { result = a; write_gpr = true; } break; /* MOVZ */
+        case 0x0Bu: if (b != 0u) { result = a; write_gpr = true; } break; /* MOVN */
         case 0x09u:
             if (rd != 0u) state->gpr[rd] = old_next_pc + 4u;
             state->next_pc = a;
@@ -145,6 +159,18 @@ AllegrexStepResult allegrex_step(AllegrexState *state, PspMemory *memory)
             return ALLEGREX_STEP_ILLEGAL_INSTRUCTION;
         }
         if (write_gpr && rd != 0u) state->gpr[rd] = result;
+        break;
+
+    case 0x1Cu: /* SPECIAL2 */
+        if (funct == 0x20u) {
+            result = count_leading(a, false); /* CLZ */
+        } else if (funct == 0x21u) {
+            result = count_leading(a, true); /* CLO */
+        } else {
+            restore_pc(state, instruction_pc, old_next_pc);
+            return ALLEGREX_STEP_ILLEGAL_INSTRUCTION;
+        }
+        if (rd != 0u) state->gpr[rd] = result;
         break;
 
     case 0x01u:
