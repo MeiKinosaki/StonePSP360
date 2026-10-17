@@ -1,23 +1,27 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.17b  
+**Versão de desenvolvimento:** v8.18b  
 **Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
 
-## Mudanças v8.17b
+## Mudanças v8.18b
 
-- Adicionada a API pública `psp_core_load_image`.
-- A API aceita um buffer com ELF32 MIPS simples ou PBP cujo DATA.PSP contenha diretamente um ELF reconhecido.
-- Usa o loader para validar e copiar segmentos para RAM, depois configura o PC da Allegrex com o entry point.
-- Teste de integração constrói um ELF de teste, carrega-o pela API pública, executa quatro instruções e verifica o resultado de um store na RAM.
-- Entradas inválidas retornam status de erro em vez de alegar carregamento bem-sucedido.
+- Adicionado teste dedicado para fluxo de controle Allegrex.
+- Testa branch BEQ tomado, execução do delay slot e chegada ao destino.
+- Testa branch não tomado e continuação sequencial.
+- Testa falha de leitura de memória e opcode inválido, verificando que o PC da instrução com falha é preservado.
+- CI compila o teste com `-Wall -Wextra -Werror`.
 
-## Limitações
+## Componentes e limitações
 
-Ainda não há leitura de arquivos do dispositivo Xbox, PRX decriptado/descomprimido, relocations, imports/NIDs, firmware/serviços PSP, scheduler, GPU/GE ou áudio. O código de teste é um ELF sintético e não prova compatibilidade com jogos comerciais. Não há teste confirmado em console físico.
+CPU Allegrex: subconjunto inteiro interpretado; ainda faltam muitas instruções Allegrex, FPU, VFPU, COP0/exceções completas e instruções branch-likely.  
+Memória: RAM simulada e aliases iniciais; VRAM, scratchpad e MMIO ainda não implementados.  
+Loader: ELF32 MIPS direto e PBP com ELF simples no DATA.PSP; sem PRX criptografado/comprimido, relocations, imports/NIDs ou leitura de arquivos do console.  
+Sistema: sem scheduler completo, HLE/kernel, input, áudio, GPU/GE ou execução de jogos comerciais comprovada.  
+Plataforma: CI produz ELF32 PowerPC via libXenon; `xenon.elf` é cópia do ELF, não `default.xex`. Não há teste confirmado em console físico.
 
 ## Build na nuvem
 
-Veja [GitHub Actions](https://github.com/MeiKinosaki/StonePSP360/actions). O artefato `xenon.elf` é uma cópia do ELF32 PowerPC, não um `default.xex`.
+Veja [GitHub Actions](https://github.com/MeiKinosaki/StonePSP360/actions).
 
 ## Histórico
 
@@ -31,3 +35,4 @@ Veja [GitHub Actions](https://github.com/MeiKinosaki/StonePSP360/actions). O art
 - v8.15b: inspeção de cabeçalhos PBP e ELF32 MIPS.
 - v8.16b: validação e carga de segmentos PT_LOAD, com zeragem de BSS.
 - v8.17b: API pública integra carregamento ELF e inicialização do PC da CPU.
+- v8.18b: testes dedicados de delay slots, fluxo de branch e caminhos de erro.
