@@ -162,15 +162,38 @@ AllegrexStepResult allegrex_step(AllegrexState *state, PspMemory *memory)
         break;
 
     case 0x1Cu: /* SPECIAL2 */
-        if (funct == 0x20u) {
-            result = count_leading(a, false); /* CLZ */
+        if (funct == 0x00u) {
+            int64_t product = (int64_t)(int32_t)a * (int64_t)(int32_t)b;
+            uint64_t acc = ((uint64_t)state->hi << 32) | state->lo;
+            uint64_t sum = acc + (uint64_t)product;
+            state->lo = (uint32_t)sum; state->hi = (uint32_t)(sum >> 32);
+        } else if (funct == 0x01u) {
+            uint64_t product = (uint64_t)a * (uint64_t)b;
+            uint64_t acc = ((uint64_t)state->hi << 32) | state->lo;
+            uint64_t sum = acc + product;
+            state->lo = (uint32_t)sum; state->hi = (uint32_t)(sum >> 32);
+        } else if (funct == 0x02u) {
+            int64_t product = (int64_t)(int32_t)a * (int64_t)(int32_t)b;
+            result = (uint32_t)(uint64_t)product; write_gpr = true;
+        } else if (funct == 0x04u) {
+            int64_t product = (int64_t)(int32_t)a * (int64_t)(int32_t)b;
+            uint64_t acc = ((uint64_t)state->hi << 32) | state->lo;
+            uint64_t diff = acc - (uint64_t)product;
+            state->lo = (uint32_t)diff; state->hi = (uint32_t)(diff >> 32);
+        } else if (funct == 0x05u) {
+            uint64_t product = (uint64_t)a * (uint64_t)b;
+            uint64_t acc = ((uint64_t)state->hi << 32) | state->lo;
+            uint64_t diff = acc - product;
+            state->lo = (uint32_t)diff; state->hi = (uint32_t)(diff >> 32);
+        } else if (funct == 0x20u) {
+            result = count_leading(a, false); write_gpr = true;
         } else if (funct == 0x21u) {
-            result = count_leading(a, true); /* CLO */
+            result = count_leading(a, true); write_gpr = true;
         } else {
             restore_pc(state, instruction_pc, old_next_pc);
             return ALLEGREX_STEP_ILLEGAL_INSTRUCTION;
         }
-        if (rd != 0u) state->gpr[rd] = result;
+        if (write_gpr && rd != 0u) state->gpr[rd] = result;
         break;
 
     case 0x01u:

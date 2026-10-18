@@ -1,7 +1,12 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.20b  
+**Versão de desenvolvimento:** v8.21b  
 **Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
+
+## Mudanças v8.21b
+
+- Adicionadas instruções Allegrex SPECIAL2 `MUL`, `MADD`, `MADDU`, `MSUB` e `MSUBU`, com operações de 64 bits em HI/LO.
+- Adicionado teste de regressão para multiplicação e acumulação.
 
 ## Mudanças v8.19b
 
@@ -40,3 +45,5 @@ Veja [GitHub Actions](https://github.com/MeiKinosaki/StonePSP360/actions).
 - v8.17b: API pública integra carregamento ELF e inicialização do PC da CPU.
 - v8.18b: testes dedicados de delay slots, fluxo de branch e caminhos de erro.
 - v8.19b: CLZ/CLO em SPECIAL2, MOVZ/MOVN e regressões dedicadas.
+- v8.20b: expansão dos testes de ALU inteira e correção do teste SRA.
+- v8.21b: SPECIAL2 MUL/MADD/MADDU/MSUB/MSUBU com regressões.
