@@ -1,4 +1,4 @@
-# Build audit — StonePSP360 v8.22b
+# Build audit — StonePSP360 v8.23b
 
 - Added Allegrex SPECIAL2 MUL, MADD, MADDU, MSUB and MSUBU.
 - MADD/MSUB use signed 32-bit operands and accumulate/subtract in the 64-bit HI:LO pair; unsigned variants use unsigned multiplication.
@@ -11,3 +11,6 @@
 - v8.22b adds a tested initial PSP services module: NID syscall registry/dispatch, one-pass cooperative thread scheduler, virtual ticks, pending IRQ flags, abstract input state, GE command queue, audio sample queue and a versioned services-only snapshot.
 - The snapshot is not a full emulator save state: it excludes CPU and guest RAM, and must not be treated as portable across builds because thread callbacks/user pointers are process-local.
 - GE/audio queues are infrastructure only; no actual PSP rendering/audio backend, complete kernel/HLE, PRX loader, encrypted PRX handling, or commercial-game compatibility is claimed.
+
+- v8.23b adds an in-memory virtual filesystem with bounded file slots and file sizes, relative-path validation (rejecting traversal and absolute paths), partial reads, overwrite, existence/size checks and deletion.
+- This VFS is volatile process memory only; it is not persistent storage, is not connected to PSP kernel file syscalls, and does not access Xbox 360 disk/USB.

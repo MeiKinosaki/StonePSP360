@@ -1,6 +1,6 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.22b  
+**Versão de desenvolvimento:** v8.23b  
 **Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
 
 ## Mudanças v8.22b
@@ -52,4 +52,4 @@ Veja [GitHub Actions](https://github.com/MeiKinosaki/StonePSP360/actions).
 - v8.18b: testes dedicados de delay slots, fluxo de branch e caminhos de erro.
 - v8.19b: CLZ/CLO em SPECIAL2, MOVZ/MOVN e regressões dedicadas.
 - v8.20b: expansão dos testes de ALU inteira e correção do teste SRA.
-- v8.21b: SPECIAL2 MUL/MADD/MADDU/MSUB/MSUBU com regressões.\n- v8.22b: primeira fundação de serviços PSP com testes de syscalls, scheduler cooperativo, timer, IRQ, input, filas GE/áudio e snapshot parcial.
+- v8.21b: SPECIAL2 MUL/MADD/MADDU/MSUB/MSUBU com regressões.\n- v8.23b: VFS em memória com validação de caminhos e testes de leitura/escrita/remoção.\n- v8.22b: primeira fundação de serviços PSP com testes de syscalls, scheduler cooperativo, timer, IRQ, input, filas GE/áudio e snapshot parcial.
