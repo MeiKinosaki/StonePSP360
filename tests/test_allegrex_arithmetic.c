@@ -78,7 +78,7 @@ int main(void)
 
     reset(&cpu, base + 0x100u);
     cpu.gpr[1] = UINT32_C(0x80000000);
-    put(&mem, base + 0x100u, R(1, 0, 13, 1, 0x03)); /* SRA */
+    put(&mem, base + 0x100u, R(0, 1, 13, 1, 0x03)); /* SRA */
     put(&mem, base + 0x104u, (UINT32_C(0x09) << 26) | (1u << 21) | (14u << 16) | UINT32_C(0xFFFF)); /* ADDIU -1 */
     put(&mem, base + 0x108u, (UINT32_C(0x0C) << 26) | (1u << 21) | (15u << 16) | UINT32_C(0x00FF)); /* ANDI */
     assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[13] == UINT32_C(0xC0000000));
