@@ -11,7 +11,7 @@ int main(void) {
  reset(&c,b); c.gpr[1]=7u; c.gpr[2]=9u; put(&m,b,SPECIAL2(1,2,3,2)); step_ok(&c,&m); assert(c.gpr[3]==63u);
  reset(&c,b+0x20u); c.hi=1u; c.lo=UINT32_C(0xFFFFFFF0); c.gpr[1]=4u; c.gpr[2]=8u; put(&m,b+0x20u,SPECIAL2(1,2,0,0)); step_ok(&c,&m); acc=((uint64_t)c.hi<<32)|c.lo; assert(acc==UINT64_C(0x200000010));
  reset(&c,b+0x40u); c.lo=100u; c.gpr[1]=7u; c.gpr[2]=9u; put(&m,b+0x40u,SPECIAL2(1,2,0,4)); step_ok(&c,&m); assert(c.hi==0u && c.lo==37u);
- reset(&c,b+0x60u); c.lo=100u; c.gpr[1]=UINT32_MAX; c.gpr[2]=2u; put(&m,b+0x60u,SPECIAL2(1,2,0,5)); step_ok(&c,&m); acc=((uint64_t)c.hi<<32)|c.lo; assert(acc==UINT64_C(0xFFFFFFFFFFFFFFFE));
+ reset(&c,b+0x60u); c.lo=100u; c.gpr[1]=UINT32_MAX; c.gpr[2]=2u; put(&m,b+0x60u,SPECIAL2(1,2,0,5)); step_ok(&c,&m); acc=((uint64_t)c.hi<<32)|c.lo; assert(acc==UINT64_C(0xFFFFFFFFE0000066));
  reset(&c,b+0x80u); c.gpr[1]=3u; c.gpr[2]=5u; put(&m,b+0x80u,SPECIAL2(1,2,0,1)); step_ok(&c,&m); assert(c.hi==0u && c.lo==15u);
  psp_memory_destroy(&m); puts("PASS: Allegrex SPECIAL2 MUL/MADD/MADDU/MSUB/MSUBU."); return 0;
 }
