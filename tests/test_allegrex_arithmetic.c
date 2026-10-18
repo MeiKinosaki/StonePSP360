@@ -44,13 +44,13 @@ int main(void)
     cpu.gpr[3] = 1u;
     cpu.gpr[4] = UINT32_C(0xAAAAAAAA);
     cpu.gpr[5] = UINT32_C(0xBBBBBBBB);
-    put(&mem, base + 0x40u, R(1, 2, 4, 0, 0x0A)); /* MOVZ: write */
-    put(&mem, base + 0x44u, R(1, 3, 5, 0, 0x0B)); /* MOVN: write */
-    put(&mem, base + 0x48u, R(1, 3, 4, 0, 0x0A)); /* MOVZ: preserve */
-    put(&mem, base + 0x4Cu, R(1, 2, 5, 0, 0x0B)); /* MOVN: preserve */
+    put(&mem, base + 0x40u, R(1, 3, 4, 0, 0x0A)); /* MOVZ: preserve */
+    put(&mem, base + 0x44u, R(1, 2, 4, 0, 0x0A)); /* MOVZ: write */
+    put(&mem, base + 0x48u, R(1, 2, 5, 0, 0x0B)); /* MOVN: preserve */
+    put(&mem, base + 0x4Cu, R(1, 3, 5, 0, 0x0B)); /* MOVN: write */
+    assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[4] == UINT32_C(0xAAAAAAAA));
     assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[4] == cpu.gpr[1]);
-    assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[5] == cpu.gpr[1]);
-    assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[4] == cpu.gpr[1]);
+    assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[5] == UINT32_C(0xBBBBBBBB));
     assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[5] == cpu.gpr[1]);
 
     /* Destination register zero remains immutable for the new operations. */
@@ -59,7 +59,33 @@ int main(void)
     put(&mem, base + 0x80u, SPECIAL2(1, 0, 0, 0x20));
     assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[0] == 0u);
 
+    /* Integer ALU, comparisons and immediate sign/zero extension. */
+    reset(&cpu, base + 0xC0u);
+    cpu.gpr[1] = UINT32_C(0x80000001);
+    cpu.gpr[2] = UINT32_C(0x00000003);
+    put(&mem, base + 0xC0u, R(1, 2, 7, 0, 0x24)); /* AND */
+    put(&mem, base + 0xC4u, R(1, 2, 8, 0, 0x25)); /* OR */
+    put(&mem, base + 0xC8u, R(1, 2, 9, 0, 0x26)); /* XOR */
+    put(&mem, base + 0xCCu, R(1, 2, 10, 0, 0x27)); /* NOR */
+    put(&mem, base + 0xD0u, R(1, 2, 11, 0, 0x2A)); /* SLT signed */
+    put(&mem, base + 0xD4u, R(1, 2, 12, 0, 0x2B)); /* SLTU unsigned */
+    assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[7] == 1u);
+    assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[8] == UINT32_C(0x80000003));
+    assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[9] == UINT32_C(0x80000002));
+    assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[10] == UINT32_C(0x7FFFFFFC));
+    assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[11] == 1u);
+    assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[12] == 0u);
+
+    reset(&cpu, base + 0x100u);
+    cpu.gpr[1] = UINT32_C(0x80000000);
+    put(&mem, base + 0x100u, R(1, 0, 13, 1, 0x03)); /* SRA */
+    put(&mem, base + 0x104u, (UINT32_C(0x09) << 26) | (1u << 21) | (14u << 16) | UINT32_C(0xFFFF)); /* ADDIU -1 */
+    put(&mem, base + 0x108u, (UINT32_C(0x0C) << 26) | (1u << 21) | (15u << 16) | UINT32_C(0x00FF)); /* ANDI */
+    assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[13] == UINT32_C(0xC0000000));
+    assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[14] == UINT32_C(0x7FFFFFFF));
+    assert(allegrex_step(&cpu, &mem) == ALLEGREX_STEP_OK && cpu.gpr[15] == 0u);
+
     psp_memory_destroy(&mem);
-    puts("PASS: Allegrex CLZ/CLO and conditional move instructions.");
+    puts("PASS: Allegrex CLZ/CLO/MOVZ/MOVN and integer ALU regressions.");
     return 0;
 }

@@ -1,6 +1,6 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.19b  
+**Versão de desenvolvimento:** v8.20b  
 **Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
 
 ## Mudanças v8.19b
