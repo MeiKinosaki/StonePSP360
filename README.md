@@ -1,7 +1,13 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.21b  
+**Versão de desenvolvimento:** v8.22b  
 **Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
+
+## Mudanças v8.22b
+
+- Criada a primeira fundação de serviços PSP: registro/dispatch de syscalls por NID, escalonador cooperativo de uma passagem, ticks virtuais, flags de IRQ, estado de controles, fila de comandos GE e fila de amostras de áudio.
+- Adicionado snapshot versionado para estado dos serviços e teste automatizado de regressão.
+- **Limitação:** isto não equivale a kernel PSP, GPU/GE renderizadora, áudio de hardware, save state completo, persistência de jogos ou execução de PRX. As filas são infraestrutura e ainda não estão ligadas a dispositivos reais.
 
 ## Mudanças v8.21b
 
@@ -21,7 +27,7 @@
 
 ## Componentes e limitações
 
-CPU Allegrex: subconjunto inteiro interpretado; ainda faltam muitas instruções Allegrex, FPU, VFPU, COP0/exceções completas e instruções branch-likely e várias instruções SPECIAL2.  
+Serviços PSP v8.22b: fundação inicial de syscall registry, escalonador cooperativo simples, ticks, IRQ pendentes, input abstrato e filas GE/áudio; ainda sem ligação completa ao kernel, GPU e dispositivo de áudio. Snapshot cobre somente o estado do módulo de serviços, não CPU/RAM/estado integral do jogo.\nCPU Allegrex: subconjunto inteiro interpretado; ainda faltam muitas instruções Allegrex, FPU, VFPU, COP0/exceções completas e instruções branch-likely e várias instruções SPECIAL2.  
 Memória: RAM simulada e aliases iniciais; VRAM, scratchpad e MMIO ainda não implementados.  
 Loader: ELF32 MIPS direto e PBP com ELF simples no DATA.PSP; sem PRX criptografado/comprimido, relocations, imports/NIDs ou leitura de arquivos do console.  
 Sistema: sem scheduler completo, HLE/kernel, input, áudio, GPU/GE ou execução de jogos comerciais comprovada.  
@@ -46,4 +52,4 @@ Veja [GitHub Actions](https://github.com/MeiKinosaki/StonePSP360/actions).
 - v8.18b: testes dedicados de delay slots, fluxo de branch e caminhos de erro.
 - v8.19b: CLZ/CLO em SPECIAL2, MOVZ/MOVN e regressões dedicadas.
 - v8.20b: expansão dos testes de ALU inteira e correção do teste SRA.
-- v8.21b: SPECIAL2 MUL/MADD/MADDU/MSUB/MSUBU com regressões.
+- v8.21b: SPECIAL2 MUL/MADD/MADDU/MSUB/MSUBU com regressões.\n- v8.22b: primeira fundação de serviços PSP com testes de syscalls, scheduler cooperativo, timer, IRQ, input, filas GE/áudio e snapshot parcial.

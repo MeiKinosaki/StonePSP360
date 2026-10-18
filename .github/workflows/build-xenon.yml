@@ -51,6 +51,10 @@ jobs:
         run: |
           cc -std=c99 -Wall -Wextra -Werror tests/test_psp_loader.c core/psp/psp_loader.c core/psp/psp_memory.c -o /tmp/test_psp_loader
           /tmp/test_psp_loader
+      - name: Host unit test — PSP services foundation
+        run: |
+          cc -std=c99 -Wall -Wextra -Werror tests/test_psp_services.c core/psp/psp_services.c -o /tmp/test_psp_services
+          /tmp/test_psp_services
       - name: Compile with cloud libXenon toolchain
         run: |
           docker run --rm -v "$GITHUB_WORKSPACE:/work/StonePSP360" -w /work/StonePSP360 free60/libxenon:latest sh -lc '

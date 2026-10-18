@@ -1,4 +1,4 @@
-# Build audit — StonePSP360 v8.21b
+# Build audit — StonePSP360 v8.22b
 
 - Added Allegrex SPECIAL2 MUL, MADD, MADDU, MSUB and MSUBU.
 - MADD/MSUB use signed 32-bit operands and accumulate/subtract in the 64-bit HI:LO pair; unsigned variants use unsigned multiplication.
@@ -7,3 +7,7 @@
 - Previous CPU, memory, ELF loader and PBP/ELF regression tests remain in the workflow.
 - Not a complete Allegrex implementation: FPU/VFPU, full COP0 exceptions, PSP GPU/GE, audio, kernel/HLE, encrypted PRX, commercial-game compatibility and physical console execution remain unverified.
 - Cloud build target is ELF32 PowerPC for Xbox 360; xenon.elf is a copy of that ELF and not default.xex.
+
+- v8.22b adds a tested initial PSP services module: NID syscall registry/dispatch, one-pass cooperative thread scheduler, virtual ticks, pending IRQ flags, abstract input state, GE command queue, audio sample queue and a versioned services-only snapshot.
+- The snapshot is not a full emulator save state: it excludes CPU and guest RAM, and must not be treated as portable across builds because thread callbacks/user pointers are process-local.
+- GE/audio queues are infrastructure only; no actual PSP rendering/audio backend, complete kernel/HLE, PRX loader, encrypted PRX handling, or commercial-game compatibility is claimed.
