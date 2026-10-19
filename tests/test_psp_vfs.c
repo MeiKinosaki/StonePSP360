@@ -21,6 +21,11 @@ int main(void)
     assert(!psp_vfs_path_valid("C:/escape"));
     assert(!psp_vfs_path_valid("PSP\\escape"));
 
+    assert(psp_vfs_write(&vfs, "PSP/SAVEDATA/empty.dat", NULL, 0u));
+    assert(psp_vfs_exists(&vfs, "PSP/SAVEDATA/empty.dat"));
+    assert(psp_vfs_size(&vfs, "PSP/SAVEDATA/empty.dat", &size) && size == 0u);
+    assert(psp_vfs_remove(&vfs, "PSP/SAVEDATA/empty.dat"));
+
     assert(psp_vfs_write(&vfs, "PSP/SAVEDATA/slot0.dat", initial,
                          sizeof(initial)));
     assert(vfs.file_count == 1u && vfs.bytes_used == sizeof(initial));

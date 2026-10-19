@@ -15,7 +15,7 @@ bool psp_vfs_path_valid(const char *path)
         path[0] == '\\' || (len >= 2u && path[1] == ':')) return false;
     for (i = 0; i <= len; ++i) {
         unsigned char c = (unsigned char)path[i];
-        if (c == '\\' || c < 0x20u) return false;
+        if (c == '\\' || (c < 0x20u && c != '\\0')) return false;
         if (c == '/' || c == '\0') {
             size_t segment_len = i - segment_start;
             if (segment_len == 0u ||

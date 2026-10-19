@@ -1,4 +1,4 @@
-# Build audit — StonePSP360 v8.24b
+# Build audit — StonePSP360 v8.25b
 
 - Added Allegrex SPECIAL2 MUL, MADD, MADDU, MSUB and MSUBU.
 - MADD/MSUB use signed 32-bit operands and accumulate/subtract in the 64-bit HI:LO pair; unsigned variants use unsigned multiplication.
@@ -16,3 +16,5 @@
 - This VFS is volatile process memory only; it is not persistent storage, is not connected to PSP kernel file syscalls, and does not access Xbox 360 disk/USB.
 
 - v8.24b adds a versioned little-endian VFS export/import image format. Import validates header, bounds, relative paths, duplicate names and trailing bytes before replacing the in-memory filesystem. This is not automatic disk persistence; callers must store/retrieve the exported bytes.
+
+- v8.25b fixes a real CI regression in VFS path validation: NUL terminators must delimit path segments and not be rejected as control characters. Adds an empty-file regression test. The v8.23b workflow failure is explicitly acknowledged; the v8.25b run must pass before calling the fix verified.
