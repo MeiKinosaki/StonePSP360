@@ -9,6 +9,7 @@
 #define PSP_VFS_PATH_MAX 96u
 #define PSP_VFS_FILE_MAX 4096u
 #define PSP_VFS_TOTAL_MAX (PSP_VFS_MAX_FILES * PSP_VFS_FILE_MAX)
+#define PSP_VFS_SERIALIZED_MAX (8u + PSP_VFS_MAX_FILES * (5u + PSP_VFS_PATH_MAX - 1u + PSP_VFS_FILE_MAX))
 
 typedef struct PspVfsFile {
     char path[PSP_VFS_PATH_MAX];
@@ -31,5 +32,9 @@ bool psp_vfs_remove(PspVfs *vfs, const char *path);
 bool psp_vfs_exists(const PspVfs *vfs, const char *path);
 bool psp_vfs_size(const PspVfs *vfs, const char *path, size_t *size);
 bool psp_vfs_path_valid(const char *path);
+/* Stable little-endian image format for a caller-provided persistent medium. */
+bool psp_vfs_export(const PspVfs *vfs, void *buffer, size_t capacity,
+                    size_t *written);
+bool psp_vfs_import(PspVfs *vfs, const void *buffer, size_t size);
 
 #endif

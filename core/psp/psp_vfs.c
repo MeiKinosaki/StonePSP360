@@ -2,6 +2,10 @@
 
 #include <string.h>
 
+#define VFS_IMAGE_MAGIC 0x31534650u /* "PFS1" in little-endian bytes */
+#define VFS_IMAGE_VERSION 1u
+#define VFS_IMAGE_HEADER_SIZE 8u
+
 bool psp_vfs_path_valid(const char *path)
 {
     size_t i, segment_start = 0u, len;
@@ -114,5 +118,101 @@ bool psp_vfs_size(const PspVfs *vfs, const char *path, size_t *size)
     file = find_file_const(vfs, path);
     if (file == NULL) return false;
     *size = file->size;
+    return true;
+}
+
+static void put_u32le(uint8_t *p, uint32_t value)
+{
+    p[0] = (uint8_t)value;
+    p[1] = (uint8_t)(value >> 8);
+    p[2] = (uint8_t)(value >> 16);
+    p[3] = (uint8_t)(value >> 24);
+}
+
+static uint32_t get_u32le(const uint8_t *p)
+{
+    return (uint32_t)p[0] | ((uint32_t)p[1] << 8) |
+           ((uint32_t)p[2] << 16) | ((uint32_t)p[3] << 24);
+}
+
+bool psp_vfs_export(const PspVfs *vfs, void *buffer, size_t capacity,
+                    size_t *written)
+{
+    uint8_t *out = (uint8_t *)buffer;
+    size_t i, pos = VFS_IMAGE_HEADER_SIZE, count = 0u;
+    if (written != NULL) *written = 0u;
+    if (vfs == NULL || buffer == NULL || capacity < VFS_IMAGE_HEADER_SIZE ||
+        vfs->file_count > PSP_VFS_MAX_FILES) return false;
+    for (i = 0; i < PSP_VFS_MAX_FILES; ++i) {
+        const PspVfsFile *f = &vfs->files[i];
+        size_t path_len;
+        if (!f->used) continue;
+        if (!psp_vfs_path_valid(f->path) || f->size > PSP_VFS_FILE_MAX)
+            return false;
+        path_len = strlen(f->path);
+        if (pos > capacity || capacity - pos < 5u + path_len ||
+            capacity - pos - 5u - path_len < f->size) return false;
+        out[pos++] = (uint8_t)path_len;
+        put_u32le(out + pos, (uint32_t)f->size);
+        pos += 4u;
+        memcpy(out + pos, f->path, path_len);
+        pos += path_len;
+        if (f->size != 0u) memcpy(out + pos, f->data, f->size);
+        pos += f->size;
+        ++count;
+    }
+    if (count != vfs->file_count) return false;
+    put_u32le(out, VFS_IMAGE_MAGIC);
+    out[4] = (uint8_t)VFS_IMAGE_VERSION;
+    out[5] = (uint8_t)count;
+    out[6] = out[7] = 0u;
+    if (written != NULL) *written = pos;
+    return true;
+}
+
+bool psp_vfs_import(PspVfs *vfs, const void *buffer, size_t size)
+{
+    const uint8_t *in = (const uint8_t *)buffer;
+    char paths[PSP_VFS_MAX_FILES][PSP_VFS_PATH_MAX];
+    size_t sizes[PSP_VFS_MAX_FILES];
+    size_t path_lengths[PSP_VFS_MAX_FILES];
+    size_t i, pos = VFS_IMAGE_HEADER_SIZE, count;
+    if (vfs == NULL || buffer == NULL || size < VFS_IMAGE_HEADER_SIZE ||
+        get_u32le(in) != VFS_IMAGE_MAGIC || in[4] != VFS_IMAGE_VERSION ||
+        in[6] != 0u || in[7] != 0u || in[5] > PSP_VFS_MAX_FILES)
+        return false;
+    count = in[5];
+    for (i = 0; i < count; ++i) {
+        size_t j, path_len, file_size;
+        if (pos > size || size - pos < 5u) return false;
+        path_len = in[pos++];
+        file_size = get_u32le(in + pos);
+        pos += 4u;
+        if (path_len == 0u || path_len >= PSP_VFS_PATH_MAX ||
+            file_size > PSP_VFS_FILE_MAX || pos > size ||
+            size - pos < path_len || size - pos - path_len < file_size)
+            return false;
+        memcpy(paths[i], in + pos, path_len);
+        paths[i][path_len] = '\0';
+        pos += path_len;
+        if (!psp_vfs_path_valid(paths[i])) return false;
+        for (j = 0; j < i; ++j)
+            if (strcmp(paths[j], paths[i]) == 0) return false;
+        path_lengths[i] = path_len;
+        sizes[i] = file_size;
+        pos += file_size;
+    }
+    if (pos != size) return false;
+    psp_vfs_init(vfs);
+    pos = VFS_IMAGE_HEADER_SIZE;
+    for (i = 0; i < count; ++i) {
+        size_t path_len = path_lengths[i], file_size = sizes[i];
+        pos += 5u + path_len;
+        if (!psp_vfs_write(vfs, paths[i], in + pos, file_size)) {
+            psp_vfs_init(vfs);
+            return false;
+        }
+        pos += file_size;
+    }
     return true;
 }

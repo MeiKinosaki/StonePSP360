@@ -1,7 +1,19 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.23b  
+**Versão de desenvolvimento:** v8.24b  
 **Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
+
+## Mudanças v8.24b
+
+- VFS agora exporta/importa uma imagem binária versionada e little-endian, com validação de tamanho, caminhos, duplicatas e truncamento antes de substituir o estado em memória.
+- Isso prepara a persistência: a aplicação chamadora ainda precisa gravar/carregar os bytes em um meio real. Não é ainda save persistente automático nem integração com o kernel PSP.
+
+## Mudanças v8.23b
+
+- Adicionada camada VFS em memória para arquivos com caminho relativo, limites de tamanho, leitura parcial, sobrescrita, consulta de existência/tamanho e remoção.
+- Rejeita caminhos absolutos, separadores invertidos, segmentos `.`/`..`, caracteres de controle e caminhos com prefixo de unidade.
+- Teste de regressão incluído no CI.
+- **Limitação:** armazenamento somente em RAM do processo; não persiste após reinicialização e ainda não está conectado às chamadas de arquivo do kernel PSP nem ao disco/USB do Xbox 360.
 
 ## Mudanças v8.22b
 
@@ -52,4 +64,4 @@ Veja [GitHub Actions](https://github.com/MeiKinosaki/StonePSP360/actions).
 - v8.18b: testes dedicados de delay slots, fluxo de branch e caminhos de erro.
 - v8.19b: CLZ/CLO em SPECIAL2, MOVZ/MOVN e regressões dedicadas.
 - v8.20b: expansão dos testes de ALU inteira e correção do teste SRA.
-- v8.21b: SPECIAL2 MUL/MADD/MADDU/MSUB/MSUBU com regressões.\n- v8.23b: VFS em memória com validação de caminhos e testes de leitura/escrita/remoção.\n- v8.22b: primeira fundação de serviços PSP com testes de syscalls, scheduler cooperativo, timer, IRQ, input, filas GE/áudio e snapshot parcial.
+- v8.21b: SPECIAL2 MUL/MADD/MADDU/MSUB/MSUBU com regressões.\n- v8.24b: exportação/importação binária versionada do VFS.\n- v8.23b: VFS em memória com validação de caminhos e testes de leitura/escrita/remoção.\n- v8.22b: primeira fundação de serviços PSP com testes de syscalls, scheduler cooperativo, timer, IRQ, input, filas GE/áudio e snapshot parcial.
