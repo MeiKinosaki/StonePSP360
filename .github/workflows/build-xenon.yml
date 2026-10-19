@@ -81,7 +81,7 @@ jobs:
       - name: Upload Xbox 360 ELF executables
         uses: actions/upload-artifact@v4
         with:
-          name: StonePSP360-v8.25b-xbox360-elf
+          name: StonePSP360-v8.26b-xbox360-elf
           path: |
             StonePSP360.elf32
             xenon.elf

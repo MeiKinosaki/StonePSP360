@@ -18,3 +18,5 @@
 - v8.24b adds a versioned little-endian VFS export/import image format. Import validates header, bounds, relative paths, duplicate names and trailing bytes before replacing the in-memory filesystem. This is not automatic disk persistence; callers must store/retrieve the exported bytes.
 
 - v8.25b fixes a real CI regression in VFS path validation: NUL terminators must delimit path segments and not be rejected as control characters. Adds an empty-file regression test. The v8.23b workflow failure is explicitly acknowledged; the v8.25b run must pass before calling the fix verified.
+
+- v8.26b corrects the NUL character literal in VFS path validation. The v8.25b attempt still failed the same path-validity regression, so this is a follow-up correction and must be CI-verified before being called successful.
