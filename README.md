@@ -1,7 +1,13 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.27b  
+**Versão de desenvolvimento:** v8.28b  
 **Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
+
+## Mudanças v8.28b
+
+- **Frente gráfica:** adicionado primeiro decodificador de palavras de comando GE, com estado para BASE/OFFSET, endereço de vértice/índice, VTYPE, PRIM, FINISH e SIGNAL.
+- Comandos desconhecidos são contados e retornados como não reconhecidos; testes automatizados verificam os registradores e os contadores.
+- **Limitação:** ainda não interpreta listas de display completas, não lê vértices da RAM PSP e não renderiza pixels.
 
 ## Mudanças v8.27b
 
@@ -57,7 +63,7 @@
 
 ## Componentes e limitações
 
-Serviços PSP v8.27b: fila GE circular O(1) e testes de wrap-around nos buffers GE/áudio; ainda sem renderizador ou dispositivo de áudio. Serviços PSP v8.22b: fundação inicial de syscall registry, escalonador cooperativo simples, ticks, IRQ pendentes, input abstrato e filas GE/áudio; ainda sem ligação completa ao kernel, GPU e dispositivo de áudio. Snapshot cobre somente o estado do módulo de serviços, não CPU/RAM/estado integral do jogo.\nCPU Allegrex: subconjunto inteiro interpretado; ainda faltam muitas instruções Allegrex, FPU, VFPU, COP0/exceções completas e instruções branch-likely e várias instruções SPECIAL2.  
+GE v8.28b: decodificação inicial de palavras de comando e registradores básicos; sem rasterização ou renderização. Serviços PSP v8.27b: fila GE circular O(1) e testes de wrap-around nos buffers GE/áudio; ainda sem renderizador ou dispositivo de áudio. Serviços PSP v8.22b: fundação inicial de syscall registry, escalonador cooperativo simples, ticks, IRQ pendentes, input abstrato e filas GE/áudio; ainda sem ligação completa ao kernel, GPU e dispositivo de áudio. Snapshot cobre somente o estado do módulo de serviços, não CPU/RAM/estado integral do jogo.\nCPU Allegrex: subconjunto inteiro interpretado; ainda faltam muitas instruções Allegrex, FPU, VFPU, COP0/exceções completas e instruções branch-likely e várias instruções SPECIAL2.  
 Memória: RAM simulada e aliases iniciais; VRAM, scratchpad e MMIO ainda não implementados.  
 Loader: ELF32 MIPS direto e PBP com ELF simples no DATA.PSP; sem PRX criptografado/comprimido, relocations, imports/NIDs ou leitura de arquivos do console.  
 Sistema: sem scheduler completo, HLE/kernel, input, áudio, GPU/GE ou execução de jogos comerciais comprovada.  

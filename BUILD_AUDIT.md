@@ -22,3 +22,5 @@
 - v8.26b corrects the NUL character literal in VFS path validation. The v8.25b attempt still failed the same path-validity regression, so this is a follow-up correction and must be CI-verified before being called successful.
 
 - v8.27b replaces the GE command queue's O(n) shifting pop with an O(1) circular buffer and adds GE/audio capacity, FIFO, overflow and wrap-around regression coverage. This remains queue infrastructure only, not a renderer or audio backend.
+
+- v8.28b adds an initial PSP GE command-word decoder for BASE, OFFSET, VADDR, IADDR, VTYPE, PRIM, FINISH and SIGNAL bookkeeping, plus host regression tests. It does not yet consume display lists from guest RAM, decode all GE opcodes, or render pixels.
