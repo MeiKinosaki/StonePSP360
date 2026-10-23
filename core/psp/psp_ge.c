@@ -1,4 +1,5 @@
 #include "psp_ge.h"
+#include "psp_services.h"
 
 #include <string.h>
 
@@ -52,4 +53,20 @@ bool psp_ge_process_word(PspGeState *state, uint32_t word,
         result->recognized = recognized ? 1u : 0u;
     }
     return recognized;
+}
+
+bool psp_ge_process_queue(PspGeState *state, PspServices *services,
+                          size_t max_commands, size_t *processed)
+{
+    size_t count = 0u;
+    uint32_t word;
+    if (processed != NULL) *processed = 0u;
+    if (state == NULL || services == NULL) return false;
+    while (count < max_commands &&
+           psp_services_ge_pop(services, &word)) {
+        (void)psp_ge_process_word(state, word, NULL);
+        ++count;
+    }
+    if (processed != NULL) *processed = count;
+    return true;
 }

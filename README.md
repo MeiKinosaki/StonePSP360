@@ -1,7 +1,13 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.28b  
+**Versão de desenvolvimento:** v8.29b  
 **Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
+
+## Mudanças v8.29b
+
+- **Integração GE + serviços:** o processador GE agora consome comandos da fila circular de serviços em lotes limitados por chamada, permitindo que o loop principal distribua trabalho entre subsistemas.
+- Comandos desconhecidos são consumidos e contabilizados sem travar a fila; testes verificam processamento parcial, limite de lote, fila restante e esvaziamento.
+- **Limitação:** a fila ainda recebe palavras fornecidas pelo código; ainda não é buscada diretamente de listas de display na RAM PSP e não há rasterização.
 
 ## Mudanças v8.28b
 
@@ -63,7 +69,7 @@
 
 ## Componentes e limitações
 
-GE v8.28b: decodificação inicial de palavras de comando e registradores básicos; sem rasterização ou renderização. Serviços PSP v8.27b: fila GE circular O(1) e testes de wrap-around nos buffers GE/áudio; ainda sem renderizador ou dispositivo de áudio. Serviços PSP v8.22b: fundação inicial de syscall registry, escalonador cooperativo simples, ticks, IRQ pendentes, input abstrato e filas GE/áudio; ainda sem ligação completa ao kernel, GPU e dispositivo de áudio. Snapshot cobre somente o estado do módulo de serviços, não CPU/RAM/estado integral do jogo.\nCPU Allegrex: subconjunto inteiro interpretado; ainda faltam muitas instruções Allegrex, FPU, VFPU, COP0/exceções completas e instruções branch-likely e várias instruções SPECIAL2.  
+GE v8.29b: decodificação inicial integrada à fila de comandos e processamento por lotes; sem rasterização ou renderização. Serviços PSP v8.27b: fila GE circular O(1) e testes de wrap-around nos buffers GE/áudio; ainda sem renderizador ou dispositivo de áudio. Serviços PSP v8.22b: fundação inicial de syscall registry, escalonador cooperativo simples, ticks, IRQ pendentes, input abstrato e filas GE/áudio; ainda sem ligação completa ao kernel, GPU e dispositivo de áudio. Snapshot cobre somente o estado do módulo de serviços, não CPU/RAM/estado integral do jogo.\nCPU Allegrex: subconjunto inteiro interpretado; ainda faltam muitas instruções Allegrex, FPU, VFPU, COP0/exceções completas e instruções branch-likely e várias instruções SPECIAL2.  
 Memória: RAM simulada e aliases iniciais; VRAM, scratchpad e MMIO ainda não implementados.  
 Loader: ELF32 MIPS direto e PBP com ELF simples no DATA.PSP; sem PRX criptografado/comprimido, relocations, imports/NIDs ou leitura de arquivos do console.  
 Sistema: sem scheduler completo, HLE/kernel, input, áudio, GPU/GE ou execução de jogos comerciais comprovada.  

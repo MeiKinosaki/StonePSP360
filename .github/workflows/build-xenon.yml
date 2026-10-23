@@ -61,7 +61,7 @@ jobs:
           /tmp/test_psp_vfs
       - name: Host unit test — PSP GE command decoding
         run: |
-          cc -std=c99 -Wall -Wextra -Werror tests/test_psp_ge.c core/psp/psp_ge.c -o /tmp/test_psp_ge
+          cc -std=c99 -Wall -Wextra -Werror tests/test_psp_ge.c core/psp/psp_ge.c core/psp/psp_services.c -o /tmp/test_psp_ge
           /tmp/test_psp_ge
       - name: Compile with cloud libXenon toolchain
         run: |
@@ -85,7 +85,7 @@ jobs:
       - name: Upload Xbox 360 ELF executables
         uses: actions/upload-artifact@v4
         with:
-          name: StonePSP360-v8.28b-xbox360-elf
+          name: StonePSP360-v8.29b-xbox360-elf
           path: |
             StonePSP360.elf32
             xenon.elf

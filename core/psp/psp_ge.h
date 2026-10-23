@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+struct PspServices;
+
 #define PSP_GE_COMMAND_BASE 0x10u
 #define PSP_GE_COMMAND_OFFSET 0x13u
 #define PSP_GE_COMMAND_VADDR 0x01u
@@ -35,5 +37,7 @@ typedef struct PspGeCommandResult {
 void psp_ge_init(PspGeState *state);
 bool psp_ge_process_word(PspGeState *state, uint32_t word,
                          PspGeCommandResult *result);
+bool psp_ge_process_queue(PspGeState *state, struct PspServices *services,
+                          size_t max_commands, size_t *processed);
 
 #endif
