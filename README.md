@@ -1,7 +1,14 @@
 # StonePSP360
 
-**Versão de desenvolvimento:** v8.26b  
+**Versão de desenvolvimento:** v8.27b  
 **Alvo:** Xbox 360 RGH/JTAG com Free60/libXenon.
+
+## Mudanças v8.27b
+
+- **Frente de hardware/GE:** fila de comandos convertida para buffer circular O(1), eliminando o deslocamento de até 255 comandos a cada remoção.
+- **Frente de áudio:** testes de capacidade total, overflow, wrap-around e ordem FIFO do buffer circular.
+- **Frente de integração/testes:** regressões cobrem preenchimento, esvaziamento e reutilização dos buffers; build host com warnings como erros permanece no CI.
+- Limitação: fila GE ainda não interpreta comandos nem renderiza; fila de áudio ainda não é mixer nem saída de áudio.
 
 ## Mudanças v8.26b
 
@@ -50,7 +57,7 @@
 
 ## Componentes e limitações
 
-Serviços PSP v8.22b: fundação inicial de syscall registry, escalonador cooperativo simples, ticks, IRQ pendentes, input abstrato e filas GE/áudio; ainda sem ligação completa ao kernel, GPU e dispositivo de áudio. Snapshot cobre somente o estado do módulo de serviços, não CPU/RAM/estado integral do jogo.\nCPU Allegrex: subconjunto inteiro interpretado; ainda faltam muitas instruções Allegrex, FPU, VFPU, COP0/exceções completas e instruções branch-likely e várias instruções SPECIAL2.  
+Serviços PSP v8.27b: fila GE circular O(1) e testes de wrap-around nos buffers GE/áudio; ainda sem renderizador ou dispositivo de áudio. Serviços PSP v8.22b: fundação inicial de syscall registry, escalonador cooperativo simples, ticks, IRQ pendentes, input abstrato e filas GE/áudio; ainda sem ligação completa ao kernel, GPU e dispositivo de áudio. Snapshot cobre somente o estado do módulo de serviços, não CPU/RAM/estado integral do jogo.\nCPU Allegrex: subconjunto inteiro interpretado; ainda faltam muitas instruções Allegrex, FPU, VFPU, COP0/exceções completas e instruções branch-likely e várias instruções SPECIAL2.  
 Memória: RAM simulada e aliases iniciais; VRAM, scratchpad e MMIO ainda não implementados.  
 Loader: ELF32 MIPS direto e PBP com ELF simples no DATA.PSP; sem PRX criptografado/comprimido, relocations, imports/NIDs ou leitura de arquivos do console.  
 Sistema: sem scheduler completo, HLE/kernel, input, áudio, GPU/GE ou execução de jogos comerciais comprovada.  

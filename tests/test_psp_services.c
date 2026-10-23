@@ -49,8 +49,43 @@ int main(void)
     assert(psp_services_ge_push(&s, 0xDEADBEEFu));
     assert(psp_services_ge_pop(&s, &ge) && ge == 0xDEADBEEFu);
     assert(!psp_services_ge_pop(&s, &ge));
+    {
+        size_t i;
+        for (i = 0; i < PSP_SERVICE_MAX_GE_COMMANDS; ++i)
+            assert(psp_services_ge_push(&s, (uint32_t)i));
+        assert(!psp_services_ge_push(&s, 999u));
+        for (i = 0; i < PSP_SERVICE_MAX_GE_COMMANDS / 2u; ++i) {
+            assert(psp_services_ge_pop(&s, &ge) && ge == (uint32_t)i);
+        }
+        for (i = 0; i < PSP_SERVICE_MAX_GE_COMMANDS / 2u; ++i)
+            assert(psp_services_ge_push(&s, 1000u + (uint32_t)i));
+        for (i = PSP_SERVICE_MAX_GE_COMMANDS / 2u;
+             i < PSP_SERVICE_MAX_GE_COMMANDS; ++i)
+            assert(psp_services_ge_pop(&s, &ge) && ge == (uint32_t)i);
+        for (i = 0; i < PSP_SERVICE_MAX_GE_COMMANDS / 2u; ++i)
+            assert(psp_services_ge_pop(&s, &ge) &&
+                   ge == 1000u + (uint32_t)i);
+        assert(!psp_services_ge_pop(&s, &ge));
+    }
     assert(psp_services_audio_push(&s, -123));
     assert(psp_services_audio_pop(&s, &sample) && sample == -123);
+    {
+        size_t i;
+        for (i = 0; i < PSP_SERVICE_AUDIO_CAPACITY; ++i)
+            assert(psp_services_audio_push(&s, (int16_t)i));
+        assert(!psp_services_audio_push(&s, 1));
+        for (i = 0; i < PSP_SERVICE_AUDIO_CAPACITY / 2u; ++i)
+            assert(psp_services_audio_pop(&s, &sample) && sample == (int16_t)i);
+        for (i = 0; i < PSP_SERVICE_AUDIO_CAPACITY / 2u; ++i)
+            assert(psp_services_audio_push(&s, (int16_t)(2000u + i)));
+        for (i = PSP_SERVICE_AUDIO_CAPACITY / 2u;
+             i < PSP_SERVICE_AUDIO_CAPACITY; ++i)
+            assert(psp_services_audio_pop(&s, &sample) && sample == (int16_t)i);
+        for (i = 0; i < PSP_SERVICE_AUDIO_CAPACITY / 2u; ++i)
+            assert(psp_services_audio_pop(&s, &sample) &&
+                   sample == (int16_t)(2000u + i));
+        assert(!psp_services_audio_pop(&s, &sample));
+    }
 
     assert(psp_services_save(&s, snapshot, sizeof(snapshot), &written));
     assert(written == sizeof(snapshot));

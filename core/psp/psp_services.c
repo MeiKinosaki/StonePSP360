@@ -105,17 +105,19 @@ void psp_services_set_input(PspServices *s, const PspInputState *input)
 
 bool psp_services_ge_push(PspServices *s, uint32_t command)
 {
+    size_t tail;
     if (s == NULL || s->ge_count >= PSP_SERVICE_MAX_GE_COMMANDS) return false;
-    s->ge_commands[s->ge_count++] = command;
+    tail = (s->ge_read + s->ge_count) % PSP_SERVICE_MAX_GE_COMMANDS;
+    s->ge_commands[tail] = command;
+    ++s->ge_count;
     return true;
 }
 
 bool psp_services_ge_pop(PspServices *s, uint32_t *command)
 {
-    size_t i;
     if (s == NULL || command == NULL || s->ge_count == 0u) return false;
-    *command = s->ge_commands[0];
-    for (i = 1; i < s->ge_count; ++i) s->ge_commands[i - 1u] = s->ge_commands[i];
+    *command = s->ge_commands[s->ge_read];
+    s->ge_read = (s->ge_read + 1u) % PSP_SERVICE_MAX_GE_COMMANDS;
     --s->ge_count;
     return true;
 }

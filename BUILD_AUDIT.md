@@ -20,3 +20,5 @@
 - v8.25b fixes a real CI regression in VFS path validation: NUL terminators must delimit path segments and not be rejected as control characters. Adds an empty-file regression test. The v8.23b workflow failure is explicitly acknowledged; the v8.25b run must pass before calling the fix verified.
 
 - v8.26b corrects the NUL character literal in VFS path validation. The v8.25b attempt still failed the same path-validity regression, so this is a follow-up correction and must be CI-verified before being called successful.
+
+- v8.27b replaces the GE command queue's O(n) shifting pop with an O(1) circular buffer and adds GE/audio capacity, FIFO, overflow and wrap-around regression coverage. This remains queue infrastructure only, not a renderer or audio backend.

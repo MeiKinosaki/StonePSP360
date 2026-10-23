@@ -45,7 +45,7 @@ typedef struct PspServices {
     uint32_t irq_pending;
     PspInputState input;
     uint32_t ge_commands[PSP_SERVICE_MAX_GE_COMMANDS];
-    size_t ge_count;
+    size_t ge_read, ge_count;
     int16_t audio[PSP_SERVICE_AUDIO_CAPACITY];
     size_t audio_read, audio_count;
 } PspServices;
